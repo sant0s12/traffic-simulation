@@ -1,5 +1,6 @@
 import sys
 import pygame
+import random
 pygame.init()
 
 BLACK = (0, 0, 0)
@@ -11,13 +12,14 @@ screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 
 class Car(pygame.sprite.Sprite):
-    def __init__(self, screen, startpos, direction):
+    def __init__(self, screen, road, startpos, direction):
         super(Car, self).__init__()
         self.surface = pygame.Surface((10, 10))
         self.surface.fill(WHITE)
         self.rect = self.surface.get_rect()
         self.rect.center = startpos
         self.screen = screen
+        self.road = road
         self.direction = direction
 
     def update(self):
@@ -26,18 +28,22 @@ class Car(pygame.sprite.Sprite):
     def draw(self):
         screen.blit(self.surface, self.rect)
 
-class CarMaker:
-    def __init__(self, screen, frequency=60):
+class Road:
+    def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=60):
         self.screen = screen
         self.carlist = []
-        self.frequency = 60
-        self.ticks = 0
+        self.frequency = frequency
+        self.ticks = frequency
+        self.position = position
+        self.lanes = lanes
+        self.lanewidth = lanewidth
 
     def update(self):
         self.ticks += 1
-        if self.ticks == self.frequency:
+        if self.ticks >= self.frequency:
             self.ticks = 0
-            newCar = Car(self.screen, (0, height/2), (1,0))
+            lane = random.choice(range(self.lanes)) * self.lanewidth
+            newCar = Car(self.screen, self, (self.position[0], self.position[1] + lane), (1,0))
             self.carlist.append(newCar)
 
         for car in self.carlist:
@@ -49,13 +55,13 @@ class CarMaker:
                 car.draw()
 
 if __name__ == "__main__":
-    carMaker = CarMaker(screen)
+    road = Road(screen, (0, height/2), lanewidth=20, frequency=30, lanes=5)
     while 1:
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
 
         screen.fill(BLACK)
-        carMaker.update()
+        road.update()
 
         pygame.display.update()
         clock.tick(60)
