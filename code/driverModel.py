@@ -1,3 +1,4 @@
+import math
 class Driver:
     """Driver Class to following the Intelligent Driver Model
 
@@ -15,7 +16,7 @@ class Driver:
         l: Vehicle length (l=1/p_max)
     """
 
-    def __init__(self, v, v_0, T, a, b, delta, s_0, s_1, l):
+    def __init__(self, v: float, v_0: float, T: float, a: float, b: float, delta: float, s_0: float, s_1: float, l: float):
         self.v = v
         self.v_0 = v_0
         self.T = T
@@ -28,23 +29,41 @@ class Driver:
 
     def __s_star(self, delta_v):
         s_star = (self.s_0
-                + self.s_1 * sqrt(self.v/self.v_0)
+                + self.s_1 * math.sqrt(self.v/self.v_0)
                 + self.T * self.v
-                + (self.v + delta_v) / (2 * sqrt(self.a * self.b)))
+                + (self.v + delta_v) / (2 * math.sqrt(self.a * self.b)))
         return s_star
 
-    def getAccel(self, otherDriver: Driver):
+    def getAccel(self, s: float, other_v: float):
         """Get current acceleration
         Args:
-            otherDriver: Driver in front of this driver
+            s: Distance to the car in front
         """
 
-        delta_v = self.v - otherDriver.v
-        s = 0 # TODO: Gap to the car in front
+        delta_v = self.v - other_v
         s_star = self.__s_star(delta_v)
 
-        accel = (self.a * (1 - pow(self.v/self.v_0, self.delta) - pow(s_star/s, 2)))
+        accel = (self.a * (1 - math.pow(self.v/self.v_0, self.delta) - math.pow(s_star/s, 2)))
+        self.v += accel
+        self.v = max(0, self.v)
 
         return accel
 
+    def __changeLaneLeft(self, otherDriverBefore: 'Driver', otherDriverAfter: 'Driver'):
+        accelAfter = self.getAccel(otherDriverAfter)
+        accelBefore = self.getAccel(otherDriverBefore)
+        return false
+
+    def __changeLaneRight(self, otherDriverBefore: 'Driver', otherDriverAfter: 'Driver'):
+        accelAfter = self.getAccel(otherDriverAfter)
+        accelBefore = self.getAccel(otherDriverBefore)
+        return false
+
+    def changeLane(self, otherDriverBefore: 'Driver', otherDriverAfterRight: 'Driver', otherDriverAfterLeft: 'Driver'):
+        changeRight = self.__changeLaneRight(otherDriverBefore=otherDriverBefore, otherDriverAfter=otherDriverAfterRight)
+        changeLeft = self.__changeLaneLeft(otherDriverBefore=otherDriverBefore, otherDriverAfter=otherDriverAfterLeft)
+
+        if changeRight: return 1
+        if changeLeft: return -1
+        else: return 0
 
