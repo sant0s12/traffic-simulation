@@ -34,6 +34,13 @@ class Driver:
                 + (self.v + delta_v) / (2 * math.sqrt(self.a * self.b)))
         return s_star
 
+    def updateSpeed(self, s: float, other_v: float):
+        accel = self.getAccel(s, other_v)
+        self.v += accel
+        self.v = max(0, self.v)
+
+        return self.v
+
     def getAccel(self, s: float, other_v: float):
         """Get current acceleration
         Args:
@@ -44,8 +51,6 @@ class Driver:
         s_star = self.__s_star(delta_v)
 
         accel = (self.a * (1 - math.pow(self.v/self.v_0, self.delta) - math.pow(s_star/s, 2)))
-        self.v += accel
-        self.v = max(0, self.v)
 
         return accel
 
