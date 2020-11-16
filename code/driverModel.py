@@ -1,4 +1,5 @@
 import math
+
 class Driver:
     """Driver Class to following the Intelligent Driver Model
 
@@ -14,9 +15,11 @@ class Driver:
         s_0: Jam distance
         s_1: Jam Distance
         l: Vehicle length (l=1/p_max)
+        thr: threshold for lane change
+        p: politeness <1
     """
 
-    def __init__(self, v: float, v_0: float, T: float, a: float, b: float, delta: float, s_0: float, s_1: float, l: float):
+    def __init__(self, v: float, v_0: float, T: float, a: float, b: float, delta: float, s_0: float, s_1: float, l: float, thr: float, p: float):
         self.v = v
         self.v_0 = v_0
         self.T = T
@@ -26,6 +29,8 @@ class Driver:
         self.s_0 = s_0
         self.s_1 = s_1
         self.l = l
+        self.thr = thr
+        self.p = p
 
     def __s_star(self, delta_v):
         s_star = (self.s_0
@@ -45,6 +50,7 @@ class Driver:
         """Get current acceleration
         Args:
             s: Distance to the car in front
+            other_v: other velocity
         """
 
         delta_v = self.v - other_v
@@ -54,21 +60,15 @@ class Driver:
 
         return accel
 
-    def __changeLaneLeft(self, otherDriverBefore: 'Driver', otherDriverAfter: 'Driver'):
-        accelAfter = self.getAccel(otherDriverAfter)
-        accelBefore = self.getAccel(otherDriverBefore)
-        return false
+    def disadvantageAndSafety(self, distOtherBefore: float, velOtherBefore:float, distOtherAfter:float, velOtherAfter: float):
+        accelAfter = self.getAccel(distOtherBefore, velOtherAfter)
+        accelBefore = self.getAccel(distOtherBefore, velOtherBefore)
+        return (accelBefore - accelAfter, accelAfter)
 
-    def __changeLaneRight(self, otherDriverBefore: 'Driver', otherDriverAfter: 'Driver'):
-        accelAfter = self.getAccel(otherDriverAfter)
-        accelBefore = self.getAccel(otherDriverBefore)
-        return false
-
-    def changeLane(self, otherDriverBefore: 'Driver', otherDriverAfterRight: 'Driver', otherDriverAfterLeft: 'Driver'):
-        changeRight = self.__changeLaneRight(otherDriverBefore=otherDriverBefore, otherDriverAfter=otherDriverAfterRight)
-        changeLeft = self.__changeLaneLeft(otherDriverBefore=otherDriverBefore, otherDriverAfter=otherDriverAfterLeft)
-
-        if changeRight: return 1
-        if changeLeft: return -1
-        else: return 0
-
+    def changeLane(self, left:bool, distFrontBefore: float, velFrontBefore:float, distFrontAfter:float, velFrontAfter: float, disadvantageBehindAfter:float, accelBehindAfter:float):       
+        accelAfter = self.getAccel(distFrontBefore, velFrontAfter)
+        accelBefore = self.getAccel(distFrontBefore, velFrontBefore)
+        advantage = accelAfter - accelBefore
+        incentive = advantage > self.p * (disadvantageBehindAfter) + self.thr
+        safe = accelBehindAfter > -self.T
+        return incentive & safe
