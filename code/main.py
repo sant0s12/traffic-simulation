@@ -41,7 +41,7 @@ class Car(pygame.sprite.Sprite):
         self.__speed = speed
 
         # Model takes "real values" (independent of FPS and scaling), that is why T is divided by FPS
-        self.model = Driver(self.speed, self.speed, 1.6/FPS, 0.73, 1.67, 4, 2, 0, 5) # To be tweaked
+        self.model = Driver(self.speed, self.speed, 1.6/FPS, 0.73, 1.67, 4, 2, 0, 5, 0.2, 0.2) # To be tweaked
 
     def updateLocal(self):
         """
