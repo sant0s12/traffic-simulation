@@ -35,25 +35,38 @@ class Car(pygame.sprite.Sprite):
         self.road: 'Road' = road
         self.speed = speed
 
-        # Model takes "real values" (independent of FPS and scaling) 
-        self.model = Driver(self.speed, 60, 1.6/FPS, 0.73, 1.67, 4, 2, 0, 5) # To be tweaked
+        # Hidden values to not share state
+        self.__pos = list(startpos)
+        self.__speed = speed
 
-    def update(self):
+        # Model takes "real values" (independent of FPS and scaling) 
+        self.model = Driver(self.speed, self.speed, 1.6/FPS, 0.73, 1.67, 4, 2, 0, 5) # To be tweaked
+
+    def updateLocal(self):
         """
         Move object along direction vector
         """
 
-        carInFront = None
+        carInFrontNow = None
+        carInFrontLeft = None
+        carInFrontRight = None
         for car in self.road.carlist:
             if car.pos[0] > self.pos[0] and car.pos[1] == self.pos[1]:
-                carInFront = car if (carInFront is None or car.pos[0] < carInFront.pos[0]) else carInFront
+                carInFrontNow = car if (carInFrontNow is None or car.pos[0] < carInFrontNow.pos[0]) else carInFrontNow
+            if (self.pos[1] is not road.bottomlane):
+                pass
+            if (self.pos[1] is not road.toplane):
+                pass
             else: continue
 
-        self.speed = self.model.updateSpeed((carInFront.pos[0] - self.pos[0]) if carInFront is not None else 100000, 
-                                    carInFront.speed if carInFront is not None else self.speed)
+        self.__pos[0] += (self.speed)/FPS
+        self.__speed = self.model.updateSpeed((carInFrontNow.pos[0] - self.pos[0]) if carInFrontNow is not None else 100000, 
+                                    carInFrontNow.speed if carInFrontNow is not None else self.speed)
 
-        self.pos[0] += (self.speed)/FPS
-        self.rect.center = self.pos # hself.direction)
+    def updateGlobal(self):
+        self.pos[0] = self.__pos[0]
+        self.speed = self.__speed
+        self.rect.center = self.pos.copy()
 
     def draw(self):
         """
@@ -73,14 +86,19 @@ class Road:
         frequency: (more like deltaT at the moment) car creation frequency
     """
 
-    def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=1, avg_speed=100, speed_sigma=10):
+    def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=1, avg_speed=200, speed_sigma=10):
         self.screen = screen
-        self.carlist: list[Car] = []
+
         self.frequency = frequency
         self.ticks = frequency
+
         self.position = position
         self.lanes = lanes
         self.lanewidth = lanewidth
+        self.toplane = 0
+        self.bottomlane = lanewidth * (lanes - 1)
+
+        self.carlist: list[Car] = []
         self.avg_speed = avg_speed
         self.speed_sigma = speed_sigma
 
@@ -98,12 +116,14 @@ class Road:
             self.carlist.append(newCar)
 
         for car in self.carlist:
-            if car.rect.left > width:
+            car.updateLocal()
+
+        for car in self.carlist:
+            car.updateGlobal()
+            if car.rect.left > width + 100:
                 self.carlist.remove(car)
                 del car
-            else:
-                car.update()
-                car.draw()
+            else: car.draw()
 
 if __name__ == "__main__":
     road = Road(screen, (0, height/2), lanewidth=5, frequency=2, lanes=2)
