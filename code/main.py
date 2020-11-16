@@ -20,31 +20,32 @@ class Car(pygame.sprite.Sprite):
         screen: pygame screen
         road: road object to later get the car in front
         startpos: starting position in screen coords
-        direction: direction of the car (for our purposes only straight lines)
+        speed: desired speed
     """
-    def __init__(self, screen, road, startpos, speed: float):
+
+    def __init__(self, screen, road: 'Road', startpos: list, speed: float):
         super(Car, self).__init__()
         self.surface = pygame.Surface((5, 2))
         self.surface.fill(WHITE)
         self.rect = self.surface.get_rect()
 
-        self.pos = list(startpos)
+        self.pos = startpos
         self.rect.center = startpos
 
         self.screen = screen
-        self.road: 'Road' = road
+        self.road = road
         self.speed = speed
 
         # Hidden values to not share state
         self.__pos = list(startpos)
         self.__speed = speed
 
-        # Model takes "real values" (independent of FPS and scaling) 
+        # Model takes "real values" (independent of FPS and scaling), that is why T is divided by FPS
         self.model = Driver(self.speed, self.speed, 1.6/FPS, 0.73, 1.67, 4, 2, 0, 5) # To be tweaked
 
     def updateLocal(self):
         """
-        Move object along direction vector
+        Update local state
         """
 
         carInFrontNow = None
@@ -59,11 +60,18 @@ class Car(pygame.sprite.Sprite):
                 pass
             else: continue
 
+        # Update local position based on global speed
         self.__pos[0] += (self.speed)/FPS
+
+        # Update local speed based on global position and speed
         self.__speed = self.model.updateSpeed((carInFrontNow.pos[0] - self.pos[0]) if carInFrontNow is not None else 100000, 
                                     carInFrontNow.speed if carInFrontNow is not None else self.speed)
 
     def updateGlobal(self):
+        """
+        Update global state
+        """
+
         self.pos[0] = self.__pos[0]
         self.speed = self.__speed
         self.rect.center = self.pos.copy()
@@ -83,36 +91,42 @@ class Road:
         position: position of the middle of the top most lane
         lanes: amount of lanes
         lanewidth: width of the lanes
-        frequency: (more like deltaT at the moment) car creation frequency
+        frequency: car creation frequency
+        avg_speed: average car speed
+        speed_sigma: standard deviation in car speed
     """
 
     def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=1, avg_speed=200, speed_sigma=10):
         self.screen = screen
 
         self.frequency = frequency
-        self.ticks = frequency
+        self.ticks = frequency # Ticks since last car creation
 
         self.position = position
         self.lanes = lanes
         self.lanewidth = lanewidth
-        self.toplane = 0
+        self.toplane = 0 # Position of top lane
         self.bottomlane = lanewidth * (lanes - 1)
 
-        self.carlist: list[Car] = []
+        self.carlist: list[Car] = [] # List of cars on the load
         self.avg_speed = avg_speed
         self.speed_sigma = speed_sigma
 
     def update(self):
         """
-        Updatea and create/destroy cars
+        Update create cars and update all the cars in the list
         """
 
+        # Create car with given frequency
         self.ticks += 1
         if FPS/self.ticks <= self.frequency:
             self.ticks = 0
+
+            # Select random lane
             lane = random.choice(range(self.lanes)) * self.lanewidth
             v = np.random.normal(self.avg_speed, self.speed_sigma)
-            newCar = Car(self.screen, self, (self.position[0], self.position[1] + lane), v)
+
+            newCar = Car(self.screen, self, [self.position[0], self.position[1] + lane], v)
             self.carlist.append(newCar)
 
         for car in self.carlist:
