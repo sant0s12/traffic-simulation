@@ -2,17 +2,17 @@ import sys
 import pygame
 import random
 import numpy as np
-from driverModel import Driver
+from driverModel import Driver, ModelParams
 pygame.init()
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 FPS = 60
 
-size = width, height = 1000, 100
-screen = pygame.display.set_mode(size)
+SIZE = WIDTH, HEIGHT = 1000, 100
+SCREEN = pygame.display.set_mode(SIZE)
 
-clock = pygame.time.Clock()
+CLOCK = pygame.time.Clock()
 
 class Car(pygame.sprite.Sprite):
     """Car game object
@@ -23,49 +23,65 @@ class Car(pygame.sprite.Sprite):
         speed: desired speed
     """
 
-    def __init__(self, screen, road: 'Road', startpos: list, speed: float):
+    def __init__(self, modelParams: ModelParams, road: 'Road', startpos: list, start_v: float):
         super(Car, self).__init__()
-        self.surface = pygame.Surface((5, 2))
+        self.surface = pygame.Surface((modelParams.length, 2))
         self.surface.fill(WHITE)
         self.rect = self.surface.get_rect()
 
         self.pos = startpos
         self.rect.center = startpos
 
-        self.screen = screen
         self.road = road
-        self.speed = speed
+        self.v = start_v
 
         # Hidden values to not share state
         self.__pos = list(startpos)
-        self.__speed = speed
+        self.__v = start_v
 
-        # Model takes "real values" (independent of FPS and scaling), that is why T is divided by FPS
-        self.model = Driver(self.speed, self.speed, 1.6/FPS, 0.73, 1.67, 4, 2, 0, 5, 0.2, 0.2) # To be tweaked
+        self.driver = Driver(modelParams=modelParams)
 
     def updateLocal(self):
         """
         Update local state
         """
 
-        carInFrontNow = None
-        carInFrontLeft = None
-        carInFrontRight = None
+        carFrontNow = None
+        carFrontLeft = None
+        carFrontRight = None
+        carBackLeft = None
+        carBackRight = None
         for car in self.road.carlist:
             if car.pos[0] > self.pos[0] and car.pos[1] == self.pos[1]:
-                carInFrontNow = car if (carInFrontNow is None or car.pos[0] < carInFrontNow.pos[0]) else carInFrontNow
-            if (self.pos[1] is not road.bottomlane):
+                carFrontNow = car if (carFrontNow is None or car.pos[0] < carFrontNow.pos[0]) else carFrontNow
+            if (self.pos[1] is not road.bottomlane and car.pos[0] > self.pos[0] and car.pos[1] == self.pos[1] + self.road.lanewidth):
+                # Front right
+                carFrontRight = car if (carFrontRight is None or car.pos[0] < carFrontRight.pos[0]) else carFrontRight
                 pass
-            if (self.pos[1] is not road.toplane):
+            if (self.pos[1] is not road.bottomlane and car.pos[0] < self.pos[0] and car.pos[1] == self.pos[1] + self.road.lanewidth):
+                # Back right
+                carBackRight = car if (carBackRight is None or car.pos[0] > carBackRight.pos[0]) else carBackRight
+                pass
+            if (self.pos[1] is not road.toplane and car.pos[0] > self.pos[0] and car.pos[1] == self.pos[1] - self.road.lanewidth):
+                # Front left
+                carFrontLeft = car if (carFrontLeft is None or car.pos[0] < carFrontLeft.pos[0]) else carFrontLeft
+                pass
+            if (self.pos[1] is not road.toplane and car.pos[0] < self.pos[0] and car.pos[1] == self.pos[1] - self.road.lanewidth):
+                # Back left
+                carBackLeft = car if (carBackLeft is None or car.pos[0] > carBackLeft.pos[0]) else carBackLeft
                 pass
             else: continue
 
-        # Update local position based on global speed
-        self.__pos[0] += (self.speed)/FPS
+        # Before this section of the code is run, the global and local state is the same, so e.g.
+        # speed and __speed can be used interchangeably on the right hand side of the assignment
 
-        # Update local speed based on global position and speed
-        self.__speed = self.model.updateSpeed((carInFrontNow.pos[0] - self.pos[0]) if carInFrontNow is not None else 100000, 
-                                    carInFrontNow.speed if carInFrontNow is not None else self.speed)
+        # Update local position
+        self.__pos[0] += (self.v)/FPS
+
+        # Update local speed
+        s = (carFrontNow.pos[0] - self.pos[0]) if carFrontNow is not None else 2 * WIDTH
+        other_v = carFrontNow.v if carFrontNow is not None else self.v
+        self.__v += self.driver.getAccel(v=self.v, other_v=other_v, s=s)
 
     def updateGlobal(self):
         """
@@ -73,7 +89,7 @@ class Car(pygame.sprite.Sprite):
         """
 
         self.pos[0] = self.__pos[0]
-        self.speed = self.__speed
+        self.v = self.__v
         self.rect.center = self.pos.copy()
 
     def draw(self):
@@ -81,7 +97,7 @@ class Car(pygame.sprite.Sprite):
         Draw onto the screen
         """
 
-        screen.blit(self.surface, self.rect)
+        self.road.screen.blit(self.surface, self.rect)
 
 class Road:
     """Road object to keep track of all the cars, create and destroy them when they are outside the screen
@@ -96,7 +112,7 @@ class Road:
         speed_sigma: standard deviation in car speed
     """
 
-    def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=1, avg_speed=200, speed_sigma=10):
+    def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=1, avg_speed=120, speed_sigma=10):
         self.screen = screen
 
         self.frequency = frequency
@@ -126,7 +142,8 @@ class Road:
             lane = random.choice(range(self.lanes)) * self.lanewidth
             v = np.random.normal(self.avg_speed, self.speed_sigma)
 
-            newCar = Car(self.screen, self, [self.position[0], self.position[1] + lane], v)
+            params = ModelParams(v_0=v, s_0=2, s_1=0, T=1.6/FPS, a=0.73, b=1.67, delta=4, length=5, thr=0.2, pol=0.5)
+            newCar = Car(modelParams=params, road=self, startpos=[self.position[0], self.position[1] + lane], start_v=v)
             self.carlist.append(newCar)
 
         for car in self.carlist:
@@ -134,24 +151,24 @@ class Road:
 
         for car in self.carlist:
             car.updateGlobal()
-            if car.rect.left > width + 100:
+            if car.rect.left > WIDTH + 100:
                 self.carlist.remove(car)
                 del car
             else: car.draw()
 
 if __name__ == "__main__":
-    road = Road(screen, (0, height/2), lanewidth=5, frequency=2, lanes=2)
+    road = Road(SCREEN, (0, HEIGHT/2), lanewidth=5, frequency=5, lanes=3)
 
     # Main game loop
     while 1:
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
 
-        screen.fill(BLACK)
+        SCREEN.fill(BLACK)
         road.update()
 
-        print(road.carlist[1].speed if len(road.carlist) > 1 else "")
+        print(road.carlist[1].v if len(road.carlist) > 1 else "")
 
         # Refresh the screen and tick the clock (for 60 fps)
         pygame.display.update()
-        clock.tick(FPS)
+        CLOCK.tick(FPS)

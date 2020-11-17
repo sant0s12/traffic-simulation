@@ -1,12 +1,9 @@
 import math
 
-class Driver:
-    """Driver Class to following the Intelligent Driver Model
-
-    This class models our divers in the simulation using the provided formulas int the paper.
+class ModelParams:
+    """Class to store the IDM parameters
 
     Args:
-        v: Starting velocity
         v_0: Desired velocity
         T: Safe time headway
         a: Maximum acceleration
@@ -19,44 +16,43 @@ class Driver:
         p: politeness <1
     """
 
-    def __init__(self, v: float, v_0: float, T: float, a: float, b: float, delta: float, s_0: float, s_1: float, l: float, thr: float, p: float):
-        self.v = v
+    def __init__(self, v_0: float, s_0: float, s_1: float, T: float, a: float, b: float, delta: float, length: float, thr: float, pol: float):
         self.v_0 = v_0
+        self.s_0 = s_0
+        self.s_1 = s_1
         self.T = T
         self.a = a
         self.b = b
         self.delta = delta
-        self.s_0 = s_0
-        self.s_1 = s_1
-        self.l = l
+        self.length = length
         self.thr = thr
-        self.p = p
+        self.pol = pol
 
-    def __s_star(self, delta_v):
-        s_star = (self.s_0
-                + self.s_1 * math.sqrt(self.v/self.v_0)
-                + self.T * self.v
-                + (self.v + delta_v) / (2 * math.sqrt(self.a * self.b)))
+class Driver:
+    """Driver Class to following the Intelligent Driver Model
+
+    This class models our divers in the simulation using the provided formulas int the paper.
+
+    Args:
+        v: Starting velocity
+        modelParams: model parameters
+    """
+
+    def __init__(self, modelParams: ModelParams):
+        self.modelParams = modelParams
+
+    def __s_star(modelParams: ModelParams, v, delta_v):
+        s_star = (modelParams.s_0
+                + modelParams.s_1 * math.sqrt(v/modelParams.v_0)
+                + modelParams.T * v
+                + (v + delta_v) / (2 * math.sqrt(modelParams.a * modelParams.b)))
+
         return s_star
 
-    def updateSpeed(self, s: float, other_v: float):
-        accel = self.getAccel(s, other_v)
-        self.v += accel
-        self.v = max(0, self.v)
-
-        return self.v
-
-    def getAccel(self, s: float, other_v: float):
-        """Get current acceleration
-        Args:
-            s: Distance to the car in front
-            other_v: other velocity
-        """
-
-        delta_v = self.v - other_v
-        s_star = self.__s_star(delta_v)
-
-        accel = (self.a * (1 - math.pow(self.v/self.v_0, self.delta) - math.pow(s_star/s, 2)))
+    def getAccel(self, v, other_v, s):
+        delta_v = v - other_v
+        s_star = Driver.__s_star(modelParams=self.modelParams, v=v, delta_v=delta_v)
+        accel = (self.modelParams.a * (1 - math.pow(v/self.modelParams.v_0, self.modelParams.delta) - math.pow(s_star/s, 2)))
 
         return accel
 
@@ -65,7 +61,7 @@ class Driver:
         accelBefore = self.getAccel(distOtherBefore, velOtherBefore)
         return (accelBefore - accelAfter, accelAfter)
 
-    def changeLane(self, left:bool, distFrontBefore: float, velFrontBefore:float, distFrontAfter:float, velFrontAfter: float, disadvantageBehindAfter:float, accelBehindAfter:float):       
+    def changeLane(self, left:bool, distFrontBefore: float, velFrontBefore:float, distFrontAfter:float, velFrontAfter: float, disadvantageBehindAfter:float, accelBehindAfter:float):
         accelAfter = self.getAccel(distFrontBefore, velFrontAfter)
         accelBefore = self.getAccel(distFrontBefore, velFrontBefore)
         advantage = accelAfter - accelBefore
