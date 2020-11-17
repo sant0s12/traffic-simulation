@@ -42,6 +42,7 @@ class Car(pygame.sprite.Sprite):
         self.__v = start_v
 
         self.driver = Driver(modelParams=modelParams)
+        self.debug = False
 
     def __calcLaneChange(self, left, carFrontNow, carFrontChange, carBackChange):
         s_before = (carFrontNow.pos_back - self.pos_front) if carFrontNow is not None else 2 * WIDTH
@@ -68,16 +69,13 @@ class Car(pygame.sprite.Sprite):
 
         return change
 
-    def updateLocal(self):
-        """
-        Update local state
-        """
-
+    def getCarsAround(self):
         carFrontNow = None
         carFrontLeft = None
         carFrontRight = None
         carBackLeft = None
         carBackRight = None
+
         for car in self.road.carlist:
             if car.pos[0] > self.pos[0] and car.pos[1] == self.pos[1]:
                 carFrontNow = car if (carFrontNow is None or car.pos[0] < carFrontNow.pos[0]) else carFrontNow
@@ -96,12 +94,27 @@ class Car(pygame.sprite.Sprite):
                 carBackLeft = car if (carBackLeft is None or car.pos[0] > carBackLeft.pos[0]) else carBackLeft
             else: continue
 
+        return {"frontNow": carFrontNow, "frontLeft": carFrontLeft, "frontRight": carFrontRight, "backLeft": carBackLeft, "backRight": carBackRight}
+
+    def updateLocal(self):
+        """
+        Update local state
+        """
+
+        carsAround = self.getCarsAround()
+        carFrontNow = carsAround["frontNow"]
+        carFrontLeft = carsAround["frontLeft"]
+        carFrontRight = carsAround["frontRight"]
+        carBackLeft = carsAround["backLeft"]
+        carBackRight = carsAround["backRight"]
+
         # Before this section of the code is run, the global and local state is the same, so e.g.
         # speed and __speed can be used interchangeably on the right hand side of the assignment
 
         # Change lanes
         changeLeft = self.__calcLaneChange(left=True, carFrontNow=carFrontNow, carFrontChange=carFrontLeft, carBackChange=carBackLeft)
         changeRight = self.__calcLaneChange(left=False, carFrontNow=carFrontNow, carFrontChange=carFrontRight, carBackChange=carBackRight)
+
 
         # Update local position
         self.__pos[0] += (self.v)/FPS
@@ -135,7 +148,8 @@ class Car(pygame.sprite.Sprite):
         Draw onto the screen
         """
 
-        self.road.screen.blit(self.surface, self.rect)
+
+        return self.road.screen.blit(self.surface, self.rect)
 
 class Road:
     """Road object to keep track of all the cars, create and destroy them when they are outside the screen
@@ -150,7 +164,7 @@ class Road:
         speed_sigma: standard deviation in car speed
     """
 
-    def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=1, avg_speed=30, speed_sigma=10):
+    def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=1, avg_speed=30, speed_sigma=2):
         self.screen = screen
 
         self.frequency = frequency
@@ -180,8 +194,8 @@ class Road:
             lane = random.choice(range(self.lanes)) * self.lanewidth
             v = np.random.normal(self.avg_speed, self.speed_sigma)
 
-            params = ModelParams(v_0=v, s_0=2, s_1=0, T=1.6, a=0.73, b=1.67, delta=4, length=5, thr=0.4, pol=0.5)
-            newCar = Car(modelParams=params, road=self, startpos=[self.position[0], self.position[1]], start_v=v)
+            params = ModelParams(v_0=v, s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5)
+            newCar = Car(modelParams=params, road=self, startpos=[self.position[0], self.position[1] + lane], start_v=v)
             self.carlist.append(newCar)
 
         for car in self.carlist:
@@ -194,31 +208,40 @@ class Road:
                 #del car
             else: car.draw()
 
-if __name__ == "__main__":
-    road = Road(SCREEN, (0, HEIGHT/2), lanewidth=5, frequency=0.5, lanes=2)
+def dist(a, b):
+    return np.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2)
 
-    randomCar = None
+if __name__ == "__main__":
+    road = Road(SCREEN, (0, HEIGHT/2), lanewidth=5, frequency=1, lanes=3)
+
+    debugCar = None
 
     # Main game loop
     while 1:
         for event in pygame.event.get():
             if event.type == pygame.QUIT: sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                mouse_pos = pygame.mouse.get_pos()
+                for car in road.carlist:
+                    if debugCar is None or dist(car.pos, mouse_pos) < dist(debugCar.pos, mouse_pos):
+                        debugCar = car
 
         SCREEN.fill(BLACK)
         road.update()
 
-        if len(road.carlist) > 0:
-            if randomCar is None: randomCar = road.carlist[0]
-            elif randomCar not in road.carlist:
-                randomCar = random.choice(road.carlist)
+        if debugCar is not None:
 
-            randomCar.surface.fill((255,0,0))
-            randomCar.draw()
-            randomCar.v = 10
-            randomCar.surface.fill(WHITE)
+            for car in debugCar.getCarsAround().values():
+                if car is None: continue
+                car.surface.fill((0,0,255))
+                car.draw()
+                car.surface.fill(WHITE)
 
+            debugCar.surface.fill((255,0,0))
+            debugCar.draw()
+            debugCar.surface.fill(WHITE)
 
-            print(randomCar.v * 3.6)
+            print("{} kmh out of {} kmh".format(debugCar.v * 3.6, debugCar.driver.modelParams.v_0 * 3.6))
 
         # Refresh the screen and tick the clock (for 60 fps)
         pygame.display.update()

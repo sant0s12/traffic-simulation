@@ -67,4 +67,4 @@ class Driver:
         advantage = accelAfter - accelBefore
         incentive = advantage > self.modelParams.pol * disadvantageBehindAfter + self.modelParams.thr
         safe = accelBehindAfter > -self.modelParams.b
-        return (incentive) & safe
+        return incentive & safe
