@@ -42,15 +42,12 @@ class Car(pygame.sprite.Sprite):
         self.__v = start_v
 
         self.driver = Driver(modelParams=modelParams)
-        self.debug = False
 
     def __calcLaneChange(self, left, carFrontNow, carFrontChange, carBackChange):
         s_before = (carFrontNow.pos_back - self.pos_front) if carFrontNow is not None else 2 * WIDTH
-        s_before = max(0.000000001, s_before)
         other_v_before = carFrontNow.v if carFrontNow is not None else self.v
 
         s_after = (carFrontChange.pos_back - self.pos_front) if carFrontChange is not None else 2 * WIDTH
-        s_after = max(0.000000001, s_after)
         other_v_after = carFrontChange.v if carFrontChange is not None else self.v
 
         if carBackChange is None:
@@ -67,7 +64,10 @@ class Car(pygame.sprite.Sprite):
 
         change = self.driver.changeLane(left=left, v=self.v, distFrontBefore=s_before, velFrontBefore=other_v_before, distFrontAfter=s_after, velFrontAfter=other_v_after, disadvantageBehindAfter=disadvantage, accelBehindAfter=accel_behind_after)
 
-        return change
+        safeBack = carBackChange.pos_front < self.pos_back if carBackChange is not None else True
+        safeFront = carFrontChange.pos_back > self.pos_front if carFrontChange is not None else True
+
+        return change and safeBack and safeFront
 
     def getCarsAround(self):
         carFrontNow = None
@@ -128,6 +128,7 @@ class Car(pygame.sprite.Sprite):
         s = (carFrontNow.pos_back - self.pos_front) if carFrontNow is not None else 2 * WIDTH
         s = max(0.000000001, s)
         other_v = carFrontNow.v if carFrontNow is not None else self.v
+        self.__v = self.v
         self.__v += self.driver.getAccel(v=self.v, other_v=other_v, s=s) / FPS
         self.__v = max(self.__v, 0)
 
@@ -164,7 +165,7 @@ class Road:
         speed_sigma: standard deviation in car speed
     """
 
-    def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=1, avg_speed=30, speed_sigma=2):
+    def __init__(self, screen, position, lanes=2, lanewidth=5, frequency=1, avg_speed=30, speed_sigma=1):
         self.screen = screen
 
         self.frequency = frequency
@@ -212,7 +213,7 @@ def dist(a, b):
     return np.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2)
 
 if __name__ == "__main__":
-    road = Road(SCREEN, (0, HEIGHT/2), lanewidth=5, frequency=1, lanes=3)
+    road = Road(SCREEN, (0, HEIGHT/2), lanewidth=5, frequency=1, lanes=3, avg_speed=30, speed_sigma=1)
 
     debugCar = None
 
@@ -237,6 +238,7 @@ if __name__ == "__main__":
                 car.draw()
                 car.surface.fill(WHITE)
 
+            # debugCar.v = 0
             debugCar.surface.fill((255,0,0))
             debugCar.draw()
             debugCar.surface.fill(WHITE)

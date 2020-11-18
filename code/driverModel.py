@@ -62,9 +62,11 @@ class Driver:
         return (accelBefore - accelAfter, accelAfter)
 
     def changeLane(self, left: bool, v: float, distFrontBefore: float, velFrontBefore:float, distFrontAfter:float, velFrontAfter: float, disadvantageBehindAfter:float, accelBehindAfter:float):
+        delta = 0.2
+        delta = delta if left else 0
         accelAfter = self.getAccel(v, velFrontAfter, distFrontBefore)
         accelBefore = self.getAccel(v, velFrontBefore, distFrontBefore)
         advantage = accelAfter - accelBefore
-        incentive = advantage > self.modelParams.pol * disadvantageBehindAfter + self.modelParams.thr
+        incentive = advantage > self.modelParams.pol * disadvantageBehindAfter + self.modelParams.thr + delta
         safe = accelBehindAfter > -self.modelParams.b
         return incentive & safe
