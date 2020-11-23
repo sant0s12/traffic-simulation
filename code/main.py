@@ -16,11 +16,12 @@ CLOCK = pygame.time.Clock()
 
 class Car(pygame.sprite.Sprite):
     """Car game object
+
     Args:
         screen: pygame screen
         road: road object to later get the car in front
         startpos: starting position in screen coords
-        speed: desired speed
+        start_v: initial speed when spawned
     """
 
     def __init__(self, modelParams: ModelParams, road: 'Road', startpos: list, start_v: float):
@@ -43,11 +44,21 @@ class Car(pygame.sprite.Sprite):
 
         self.driver = Driver(modelParams=modelParams)
 
-    def __calcLaneChange(self, left, carFrontNow, carFrontChange, carBackChange):
-        s_before = (carFrontNow.pos_back - self.pos_front) if carFrontNow is not None else 2 * WIDTH
-        other_v_before = carFrontNow.v if carFrontNow is not None else self.v
+    def __calcLaneChange(self, left: bool, carFrontNow: 'Car', carFrontChange: 'Car', carBackChange: 'Car'):
+        """Calculate if car should change lane
 
-        s_after = (carFrontChange.pos_back - self.pos_front) if carFrontChange is not None else 2 * WIDTH
+        Args:
+        left: True if the current lane change is a left lane change
+        carFrontNow: current Car in front of this Car
+        carFrontNow: Car that will be in front of this Car after the change
+        carBackChange: Car that will be behind this Car after the cange
+
+        Returns: True if the lane change should happen, False otherwise
+        """
+        s_before = (carFrontNow.pos_back - self.pos_front) if carFrontNow is not None else 2 * WIDTH # Distance to the car in front
+        other_v_before = carFrontNow.v if carFrontNow is not None else self.v                        # Difference in speed to the car in front
+
+        s_after = (carFrontChange.pos_back - self.pos_front) if carFrontChange is not None else 2 * WIDTH # Same as above but after the change
         other_v_after = carFrontChange.v if carFrontChange is not None else self.v
 
         if carBackChange is None:
@@ -64,12 +75,23 @@ class Car(pygame.sprite.Sprite):
 
         change = self.driver.changeLane(left=left, v=self.v, distFrontBefore=s_before, velFrontBefore=other_v_before, distFrontAfter=s_after, velFrontAfter=other_v_after, disadvantageBehindAfter=disadvantage, accelBehindAfter=accel_behind_after)
 
+        # Check that the cars will not intersect
         safeBack = carBackChange.pos_front < self.pos_back if carBackChange is not None else True
         safeFront = carFrontChange.pos_back > self.pos_front if carFrontChange is not None else True
 
         return change and safeBack and safeFront
 
     def getCarsAround(self):
+        """Get other Cars around this Car
+
+        Returns: Dict with:
+            frontNow: current Car in front of this Car
+            frontLeft: front left Car
+            frontRight: front right Car
+            backLeft: back left Car
+            backRight: back right Car
+        """
+
         carFrontNow = None
         carFrontLeft = None
         carFrontRight = None
@@ -109,12 +131,11 @@ class Car(pygame.sprite.Sprite):
         carBackRight = carsAround["backRight"]
 
         # Before this section of the code is run, the global and local state is the same, so e.g.
-        # speed and __speed can be used interchangeably on the right hand side of the assignment
+        # v and __v can be used interchangeably on the right hand side of the assignment
 
         # Change lanes
         changeLeft = self.__calcLaneChange(left=True, carFrontNow=carFrontNow, carFrontChange=carFrontLeft, carBackChange=carBackLeft)
         changeRight = self.__calcLaneChange(left=False, carFrontNow=carFrontNow, carFrontChange=carFrontRight, carBackChange=carBackRight)
-
 
         # Update local position
         self.__pos[0] += (self.v)/FPS
@@ -149,7 +170,6 @@ class Car(pygame.sprite.Sprite):
         Draw onto the screen
         """
 
-
         return self.road.screen.blit(self.surface, self.rect)
 
 class Road:
@@ -160,7 +180,7 @@ class Road:
         position: position of the middle of the top most lane
         lanes: amount of lanes
         lanewidth: width of the lanes
-        frequency: car creation frequency
+        frequency: car creation frequency (amount of cars / second)
         avg_speed: average car speed
         speed_sigma: standard deviation in car speed
     """
