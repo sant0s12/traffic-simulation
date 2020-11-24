@@ -6,8 +6,8 @@ from DriverModel import Driver, ModelParams
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-STEP = 0.1 # delta_t in seconds
-SPEED = 10 # playback speed of the data (1 for real time)
+DELTA_T = 0.1 # delta_t in seconds
+SPEED = 5 # playback speed of the data (1 for real time)
 
 SIZE = WIDTH, HEIGHT = 1000, 100
 SCREEN = pygame.display.set_mode(SIZE)
@@ -19,7 +19,7 @@ def dist(a, b):
 
 if __name__ == "__main__":
     a = ModelParams(v_0=120, s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5)
-    sim = Simulation([a], 0.01)
+    sim = Simulation(modelParamsList=[a], delta_t=DELTA_T, car_frequency=1.5)
     data = sim.run(50)
 
     pygame.init()
@@ -30,8 +30,11 @@ if __name__ == "__main__":
 
         SCREEN.fill(BLACK)
 
+        avg_sum = 0.
         for car in datapoint:
             SCREEN.blit(car['surface'], car['rect'])
+            avg_sum += car['v'] * 3.6
+        print(avg_sum/len(datapoint))
 
         pygame.display.update()
-        CLOCK.tick(1./STEP * SPEED)
+        CLOCK.tick(1./DELTA_T * SPEED)

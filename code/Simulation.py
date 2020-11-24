@@ -2,7 +2,6 @@ import sys
 import pygame
 import random
 import numpy as np
-import copy
 from tqdm import tqdm
 from DriverModel import Driver, ModelParams
 
@@ -26,7 +25,7 @@ class Simulation:
             speed: desired speed
         """
 
-        def __init__(self, modelParams: ModelParams, road: 'Road', startpos: list, start_v: float):
+        def __init__(self, modelParams: ModelParams, road: 'Road', startpos: list, start_v: float=None):
             super(Simulation.Car, self).__init__()
             self.surface = pygame.Surface((modelParams.length, 2))
             self.surface.fill(WHITE)
@@ -38,7 +37,7 @@ class Simulation:
             self.rect.center = startpos
 
             self.road = road
-            self.v = start_v
+            self.v = start_v if start_v is not None else modelParams.v_0
 
             # Hidden values to not share state
             self.__pos = list(startpos)
@@ -171,19 +170,17 @@ class Simulation:
         """Road object to keep track of all the cars, create and destroy them when they are outside the screen
 
         Args:
-            screen: pygame screen
-            position: position of the middle of the top most lane
+            position: position of the the top most lane
             lanes: amount of lanes
             lanewidth: width of the lanes
-            frequency: car creation frequency
-            avg_speed: average car speed
-            speed_sigma: standard deviation in car speed
+            car_frequency: car creation frequency
+            length: road lenght
         """
 
-        def __init__(self, modelParamsList, position, lanes=2, lanewidth=5, length=1000, frequency=1, avg_speed=30, speed_sigma=1):
+        def __init__(self, modelParamsList, position=(0, 0), lanes=2, lanewidth=5, length=1000, car_frequency=1):
             self.modelParamsList = modelParamsList
-            self.frequency = frequency
-            self.last_new_car_t = 1.0/frequency
+            self.car_frequency = car_frequency
+            self.last_new_car_t = 1.0/car_frequency
 
             self.position = position
             self.length = length
@@ -193,8 +190,6 @@ class Simulation:
             self.bottomlane = self.toplane + lanewidth * (lanes - 1)
 
             self.carlist: list[Car] = [] # List of cars on the load
-            self.avg_speed = avg_speed
-            self.speed_sigma = speed_sigma
 
         def update(self, delta_t: float):
             """
@@ -203,15 +198,14 @@ class Simulation:
 
             # Create car with given frequency
             self.last_new_car_t += delta_t
-            if self.last_new_car_t >= 1.0/self.frequency:
+            if self.last_new_car_t >= 1.0/self.car_frequency:
                 self.last_new_car_t = 0
 
                 # Select random lane
                 lane = random.choice(range(self.lanes)) * self.lanewidth
-                v = np.random.normal(self.avg_speed, self.speed_sigma)
 
                 params = random.choice(self.modelParamsList)
-                newCar = Simulation.Car(modelParams=params, road=self, startpos=[self.position[0], self.position[1] + lane], start_v=v)
+                newCar = Simulation.Car(modelParams=params, road=self, startpos=[self.position[0], self.position[1] + lane])
                 self.carlist.append(newCar)
 
             for car in self.carlist:
@@ -226,10 +220,10 @@ class Simulation:
             for car in self.carlist:
                 car.draw(screen)
 
-    def __init__(self, modelParamsList: list, delta_time: float):
+    def __init__(self, modelParamsList: list, roadPosition=(0, 0), roadLength=1000, car_frequency=1, delta_t=0.1):
         self.modelParamsList = modelParamsList
-        self.delta_time = delta_time
-        self.road = Simulation.Road(modelParamsList=modelParamsList, position=(0, 0), lanewidth=5, frequency=1, lanes=3, avg_speed=30, speed_sigma=1)
+        self.delta_time = delta_t
+        self.road = Simulation.Road(modelParamsList=modelParamsList, position=roadPosition, lanewidth=5, car_frequency=car_frequency, lanes=2)
 
     def step(self):
         self.road.update(delta_t=self.delta_time)
