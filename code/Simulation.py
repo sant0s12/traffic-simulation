@@ -2,15 +2,23 @@ import sys
 import pygame
 import random
 import numpy as np
+import copy
+from tqdm import tqdm
 from DriverModel import Driver, ModelParams
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
 class Simulation:
+    """This class represents the whole simulation and contains the Road and Car objects
+
+    Args:
+        TODO
+    """
 
     class Car(pygame.sprite.Sprite):
         """Car game object
+
         Args:
             screen: pygame screen
             road: road object to later get the car in front
@@ -35,6 +43,7 @@ class Simulation:
             # Hidden values to not share state
             self.__pos = list(startpos)
             self.__v = start_v
+            self.__accel = 0.
 
             self.driver = Driver(modelParams=modelParams)
 
@@ -124,7 +133,8 @@ class Simulation:
             s = max(0.000000001, s)
             other_v = carFrontNow.v if carFrontNow is not None else self.v
             self.__v = self.v
-            self.__v += self.driver.getAccel(v=self.v, other_v=other_v, s=s) * delta_t
+            self.__accel = self.driver.getAccel(v=self.v, other_v=other_v, s=s) * delta_t
+            self.__v += self.__accel
             self.__v = max(self.__v, 0)
 
         def updateGlobal(self):
@@ -145,6 +155,17 @@ class Simulation:
             """
 
             return screen.blit(self.surface, self.rect)
+
+        def serialize(self):
+            """Serialize the car
+
+            Returns: Dict with:
+            pos: position of the car
+            accel: current acceleration
+            rect: pygame rect (for displaying it later)
+            surface: pygame surface (for displaying it later)
+            """
+            return {'pos': self.pos, 'v': self.v, 'accel': self.__accel, 'rect': self.rect.copy(), 'surface': self.surface.copy()}
 
     class Road:
         """Road object to keep track of all the cars, create and destroy them when they are outside the screen
@@ -212,12 +233,12 @@ class Simulation:
 
     def step(self):
         self.road.update(delta_t=self.delta_time)
-        return self.road.carlist.copy()
+        return self.road.carlist
 
     def run(self, time: float):
-        data = {}
-        for t in np.arange(0, time, self.delta_time):
-            data[t] = self.step()
+        data = []
+        for t in tqdm(np.arange(0, time, self.delta_time)):
+            data.append([car.serialize() for car in self.step()])
 
         return data
 
