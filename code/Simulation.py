@@ -19,10 +19,10 @@ class Simulation:
         """Car game object
 
         Args:
-        screen: pygame screen
-        road: road object to later get the car in front
-        startpos: starting position in screen coords
-        start_v: initial speed when spawned
+            screen: pygame screen
+            road: road object to later get the car in front
+            startpos: starting position in screen coords
+            start_v: initial speed when spawned
         """
 
         def __init__(self, modelParams: ModelParams, road: 'Road', startpos: list, start_v: float=None):
