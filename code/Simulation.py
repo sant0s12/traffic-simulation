@@ -22,7 +22,7 @@ class Simulation:
             screen: pygame screen
             road: road object to later get the car in front
             startpos: starting position in screen coords
-            speed: desired speed
+            start_v: initial speed when spawned
         """
 
         def __init__(self, modelParams: ModelParams, road: 'Road', startpos: list, start_v: float=None):
@@ -47,10 +47,10 @@ class Simulation:
             self.driver = Driver(modelParams=modelParams)
 
         def __calcLaneChange(self, left, carFrontNow, carFrontChange, carBackChange):
-            s_before = (carFrontNow.pos_back - self.pos_front) if carFrontNow is not None else 2 * self.road.length
-            other_v_before = carFrontNow.v if carFrontNow is not None else self.v
+            s_before = (carFrontNow.pos_back - self.pos_front) if carFrontNow is not None else 2 * self.road.length # Distance to the car in front
+            other_v_before = carFrontNow.v if carFrontNow is not None else self.v                                   # Speed of the car in front
 
-            s_after = (carFrontChange.pos_back - self.pos_front) if carFrontChange is not None else 2 * self.road.length
+            s_after = (carFrontChange.pos_back - self.pos_front) if carFrontChange is not None else 2 * self.road.length # Same as above but after the change
             other_v_after = carFrontChange.v if carFrontChange is not None else self.v
 
             if carBackChange is None:
@@ -73,6 +73,16 @@ class Simulation:
             return change and safeBack and safeFront
 
         def getCarsAround(self):
+            """Get other Cars around this Car
+            
+            Returns: Dict with:
+                frontNow: current Car in front of this Car
+                frontLeft: front left Car
+                frontRight: front right Car
+                backLeft: back left Car
+                backRight: back right Car
+            """
+            
             carFrontNow = None
             carFrontLeft = None
             carFrontRight = None
@@ -112,7 +122,7 @@ class Simulation:
             carBackRight = carsAround["backRight"]
 
             # Before this section of the code is run, the global and local state is the same, so e.g.
-            # speed and __speed can be used interchangeably on the right hand side of the assignment
+            # v and __v can be used interchangeably on the right hand side of the assignment
 
             # Change lanes
             changeLeft = self.__calcLaneChange(left=True, carFrontNow=carFrontNow, carFrontChange=carFrontLeft, carBackChange=carBackLeft)
@@ -167,7 +177,7 @@ class Simulation:
             return {'pos': self.pos, 'v': self.v, 'accel': self.__accel, 'rect': self.rect.copy(), 'surface': self.surface.copy()}
 
     class Road:
-        """Road object to keep track of all the cars, create and destroy them when they are outside the screen
+        """Road object to keep track of all the cars, create and destroy them when they are outside the simulation bounds
 
         Args:
             position: position of the the top most lane
@@ -180,7 +190,7 @@ class Simulation:
         def __init__(self, modelParamsList, position=(0, 0), lanes=2, lanewidth=5, length=1000, car_frequency=1):
             self.modelParamsList = modelParamsList
             self.car_frequency = car_frequency
-            self.last_new_car_t = 1.0/car_frequency
+            self.last_new_car_t = 1.0/car_frequency # Time since last car creation
 
             self.position = position
             self.length = length
