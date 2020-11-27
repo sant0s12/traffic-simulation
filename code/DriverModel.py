@@ -29,7 +29,7 @@ class Driver:
         return accel
 
     def disadvantage_and_safety(self, v:float, dist_other_before: float, vel_other_before:float, dist_other_after:float, vel_other_after: float):
-        accel_after = self.get_accel(v, vel_other_after, dist_other_before)
+        accel_after = self.get_accel(v, vel_other_after, dist_other_after)
         accel_before = self.get_accel(v, vel_other_before, dist_other_before)
         return (accel_before - accel_after, accel_after)
 
