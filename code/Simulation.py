@@ -3,9 +3,8 @@ import numpy as np
 from tqdm import tqdm
 from Road import Road
 
-
 class Simulation:
-    
+
     def __init__(self, params_list: list, road_position=(0, 0), road_length=1000, road_lanes=2, road_lane_width=5, car_frequency=1, delta_t=0.1):
         self.params_list = params_list
         self.delta_t = delta_t

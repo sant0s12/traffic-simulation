@@ -21,7 +21,7 @@ def dist(a, b):
 
 if __name__ == "__main__":
     #v_0 = 125 and 80 km/h, rest are standard values from the paper/traffic-simulation.de
-    car_normal = Car.Params(v_0=34.72, T=1.5, a=0.3, b=3, delta=4, s_0=2, s_1=0, length=5, thr=0.2, pol=0.5, spawn_weight=126090)
+    car_normal = Car.Params(v_0=34.72, T=1.5, a=0.3, b=3, delta=4, s_0=2, s_1=0, length=5, thr=0.2, pol=0.5, spawn_weight=126090, fail_p=0.0001, fail_steps=1)
     truck_normal = Car.Params(v_0=22.224, T=1.7, a=0.3, b=2, delta=4, s_0=2, s_1=0, length=16.5, thr=0.2, pol=0.5, spawn_weight=6730)
 
     sim = Simulation(params_list=[car_normal, truck_normal], delta_t=DELTA_T, car_frequency=1/1.6)

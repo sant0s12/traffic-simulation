@@ -38,7 +38,7 @@ class Road:
         distribution = [m.spawn_weight for m in self.params_list]
         models = [m for m in self.params_list]
         params = random.choices(models, weights=distribution, k=1)[0]
-        new_car = Car.Car(params=params, road=self, startpos=[self.position[0], self.position[1] + lane])
+        new_car = Car.Car(params=params.apply_dist(), road=self, startpos=[self.position[0], self.position[1] + lane])
 
         car_front = new_car.get_cars_around()["frontNow"]
 

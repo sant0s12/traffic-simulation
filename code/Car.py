@@ -1,5 +1,6 @@
 import warnings
 import pygame
+import random
 from DriverModel import Driver
 
 BLACK = (0, 0, 0)
@@ -38,6 +39,7 @@ class Params:
         # Distribution never applied to these params
         self.start_v = kwargs.pop('start_v', self.v_0)
         self.fail_p = kwargs.pop('fail_p', 0)
+        self.fail_steps = kwargs.pop('fail_steps', 0)
         self.spawn_weight = kwargs.pop('spawn_weight', 10)
 
         if len(kwargs) > 0:
@@ -58,7 +60,13 @@ class Params:
         thr = np.random.normal(self.thr[0], self.thr[1]) if hasattr(self.thr, '__getitem__') else self.thr
         pol = np.random.normal(self.pol[0], self.pol[1]) if hasattr(self.pol, '__getitem__') else self.pol
 
-        return Params(v_0=v_0, s_0=s_0, s_1=s_1, T=T, a=a, b=b, delta=delta, length=length, thr=thr, pol=pol)
+        start_v = self.start_v
+        fail_p = self.fail_p
+        fail_steps = self.fail_steps
+        spawn_weight = self.spawn_weight
+
+        return Params(v_0=v_0, s_0=s_0, s_1=s_1, T=T, a=a, b=b, delta=delta, length=length,
+                      thr=thr, pol=pol, start_v=start_v, fail_p=fail_p, fail_steps=fail_steps, spawn_weight=spawn_weight)
 
 class Car(pygame.sprite.Sprite):
     """Car game object
@@ -86,7 +94,9 @@ class Car(pygame.sprite.Sprite):
 
         self.road = road
         self.v = self.params.start_v
-        self.fail_p = self.params.fail_p
+
+        self.failing = False
+        self.steps_left = self.params.fail_steps
 
         # Hidden values to not share state
         self.__pos = list(startpos)
@@ -164,6 +174,14 @@ class Car(pygame.sprite.Sprite):
         Update local state
         """
 
+        if self.failing or (random.random() < self.params.fail_p):
+            self.failing = True
+            if self.steps_left > 0:
+                self.steps_left -= 1
+            else:
+                self.steps_left = self.params.fail_steps
+                self.failing = False
+
         cars_around = self.get_cars_around()
         car_front_now = cars_around["frontNow"]
         car_front_left = cars_around["frontLeft"]
@@ -192,9 +210,9 @@ class Car(pygame.sprite.Sprite):
         s = max(0.000000001, s)
         other_v = car_front_now.v if car_front_now is not None else self.v
         self.__v = self.v
-        self.__accel = self.driver.get_accel(v=self.v, other_v=other_v, s=s) * delta_t
+        self.__accel = self.driver.get_accel(v=self.v, other_v=other_v, s=s) * delta_t if not self.failing else 0
         self.__v += self.__accel
-        self.__v = max(self.__v, 0)
+        self.__v = max(self.__v, 0) if not self.failing else 0
 
     def update_global(self):
         """
