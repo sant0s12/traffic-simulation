@@ -57,7 +57,7 @@ class Driver:
         return accel
 
     def disadvantageAndSafety(self, v:float, distOtherBefore: float, velOtherBefore:float, distOtherAfter:float, velOtherAfter: float):
-        accelAfter = self.getAccel(v, velOtherAfter, distOtherBefore)
+        accelAfter = self.getAccel(v, velOtherAfter, distOtherAfter)
         accelBefore = self.getAccel(v, velOtherBefore, distOtherBefore)
         return (accelBefore - accelAfter, accelAfter)
 
