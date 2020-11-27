@@ -39,10 +39,18 @@ class Simulation:
             self.road = road
             self.v = start_v if start_v is not None else modelParams.v_0
 
+            #failure time and probability
+            self.failureSteps= 5
+            self.failureProbability = 0.05
+
+            self.failing= False
+            self.stepsLeft = self.failureSteps #TODO: put params in modelParams.
             # Hidden values to not share state
             self.__pos = list(startpos)
             self.__v = start_v
             self.__accel = 0.
+
+
 
             self.driver = Driver(modelParams=modelParams)
 
@@ -113,6 +121,18 @@ class Simulation:
             """
             Update local state
             """
+            if self.failing or (random.random() < self.failureProbability):
+                self.failing = True
+                if self.stepsLeft>0:
+                    self.stepsLeft -= 1
+                else:
+                    self.stepsLeft = self.failureSteps
+                    self.failing = False         
+
+
+
+
+
 
             carsAround = self.getCarsAround()
             carFrontNow = carsAround["frontNow"]
@@ -142,9 +162,9 @@ class Simulation:
             s = max(0.000000001, s)
             other_v = carFrontNow.v if carFrontNow is not None else self.v
             self.__v = self.v
-            self.__accel = self.driver.getAccel(v=self.v, other_v=other_v, s=s) * delta_t
+            self.__accel = self.driver.getAccel(v=self.v, other_v=other_v, s=s) * delta_t if not self.failing else 0
             self.__v += self.__accel
-            self.__v = max(self.__v, 0)
+            self.__v = max(self.__v, 0) if not self.failing else 0
 
         def updateGlobal(self):
             """
