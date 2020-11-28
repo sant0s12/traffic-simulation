@@ -109,7 +109,7 @@ class Simulation:
 
             return {"frontNow": car_front_now, "frontLeft": car_front_left, "frontRight": car_front_right, "backLeft": car_back_left, "backRight": car_back_right}
 
-        def updateLocal(self, delta_t: float):
+        def update_local(self, delta_t: float):
             """
             Update local state
             """
@@ -146,7 +146,7 @@ class Simulation:
             self.__v += self.__accel
             self.__v = max(self.__v, 0)
 
-        def updateGlobal(self):
+        def update_global(self):
             """
             Update global state
             """
@@ -219,10 +219,10 @@ class Simulation:
                 self.carlist.append(new_car)
 
             for car in self.carlist:
-                car.updateLocal(delta_t)
+                car.update_local(delta_t)
 
             for car in self.carlist:
-                car.updateGlobal()
+                car.update_global()
                 if car.rect.left > self.length + 100:
                     self.carlist.remove(car)
 
