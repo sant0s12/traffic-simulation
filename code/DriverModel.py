@@ -57,14 +57,14 @@ class Driver:
         return accel
 
     def disadvantageAndSafety(self, v:float, distOtherBefore: float, velOtherBefore:float, distOtherAfter:float, velOtherAfter: float):
-        accelAfter = self.getAccel(v, velOtherAfter, distOtherBefore)
+        accelAfter = self.getAccel(v, velOtherAfter, distOtherAfter)
         accelBefore = self.getAccel(v, velOtherBefore, distOtherBefore)
         return (accelBefore - accelAfter, accelAfter)
 
     def changeLane(self, left: bool, v: float, distFrontBefore: float, velFrontBefore:float, distFrontAfter:float, velFrontAfter: float, disadvantageBehindAfter:float, accelBehindAfter:float):
         delta = 0.2
         delta = delta if left else 0
-        accelAfter = self.getAccel(v, velFrontAfter, distFrontBefore)
+        accelAfter = self.getAccel(v, velFrontAfter, distFrontAfter)
         accelBefore = self.getAccel(v, velFrontBefore, distFrontBefore)
         advantage = accelAfter - accelBefore
         incentive = advantage > self.modelParams.pol * disadvantageBehindAfter + self.modelParams.thr + delta
