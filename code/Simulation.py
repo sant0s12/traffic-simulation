@@ -74,7 +74,7 @@ class Simulation:
 
         def getCarsAround(self):
             """Get other Cars around this Car
-            
+
             Returns: Dict with:
                 frontNow: current Car in front of this Car
                 frontLeft: front left Car
@@ -82,7 +82,7 @@ class Simulation:
                 backLeft: back left Car
                 backRight: back right Car
             """
-            
+
             carFrontNow = None
             carFrontLeft = None
             carFrontRight = None
@@ -230,10 +230,10 @@ class Simulation:
             for car in self.carlist:
                 car.draw(screen)
 
-    def __init__(self, modelParamsList: list, roadPosition=(0, 0), roadLength=1000, car_frequency=1, delta_t=0.1):
+    def __init__(self, modelParamsList: list, roadPosition=(0, 0), roadLength=1000, lanewideness =20, lanes_amt = 2, car_frequency=1, delta_t=0.1):
         self.modelParamsList = modelParamsList
         self.delta_time = delta_t
-        self.road = Simulation.Road(modelParamsList=modelParamsList, position=roadPosition, lanewidth=5, car_frequency=car_frequency, lanes=2)
+        self.road = Simulation.Road(modelParamsList=modelParamsList, position=roadPosition, lanewidth=lanewideness, car_frequency=car_frequency, lanes=lanes_amt)
 
     def step(self):
         self.road.update(delta_t=self.delta_time)
@@ -245,4 +245,3 @@ class Simulation:
             data.append([car.serialize() for car in self.step()])
 
         return data
-
