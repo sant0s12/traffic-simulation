@@ -18,8 +18,8 @@ def dist(a, b):
     return np.sqrt((a[0]-b[0])**2 + (a[1]-b[1])**2)
 
 if __name__ == "__main__":
-    a = ModelParams(v_0=120, s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5)
-    sim = Simulation(modelParamsList=[a], delta_t=DELTA_T, car_frequency=1.5)
+    a = ModelParams(v_0=30, s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5)
+    sim = Simulation(model_params_list=[a], delta_t=DELTA_T, car_frequency=1.5)
     data = sim.run(50)
 
     pygame.init()
