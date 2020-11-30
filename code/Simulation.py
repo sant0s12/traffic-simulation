@@ -214,7 +214,9 @@ class Simulation:
                 # Select random lane
                 lane = random.choice(range(self.lanes)) * self.lanewidth
 
-                params = random.choice(self.model_params_list)
+                distribution = [m[1] for m in self.model_params_list]
+                models = [m[0] for m in self.model_params_list]
+                params = random.choices(models, weights=distribution, k=1)[0]
                 new_car = Simulation.Car(model_params=params, road=self, startpos=[self.position[0], self.position[1] + lane])
                 self.carlist.append(new_car)
 
@@ -245,4 +247,3 @@ class Simulation:
             data.append([car.serialize() for car in self.step()])
 
         return data
-
