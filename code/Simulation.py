@@ -187,11 +187,10 @@ class Simulation:
             length: road lenght
         """
 
-        def __init__(self, model_params_list, distribution, position, lanes, lanewidth, length, car_frequency):
+        def __init__(self, model_params_list, position, lanes, lanewidth, length, car_frequency):
             self.model_params_list = model_params_list
             self.car_frequency = car_frequency
             self.last_new_car_t = 1.0/car_frequency # Time since last car creation
-            self.distribution = distribution
 
             self.position = position
             self.length = length
@@ -215,7 +214,9 @@ class Simulation:
                 # Select random lane
                 lane = random.choice(range(self.lanes)) * self.lanewidth
 
-                params = random.choices(self.model_params_list, weights=self.distribution, k=1)[0]
+                distribution = [m[1] for m in self.model_params]
+                models = [m[0] for m in self.model_params]
+                params = random.choices(models, weights=distribution, k=1)[0]
                 new_car = Simulation.Car(model_params=params, road=self, startpos=[self.position[0], self.position[1] + lane])
                 self.carlist.append(new_car)
 
@@ -231,11 +232,10 @@ class Simulation:
             for car in self.carlist:
                 car.draw(screen)
 
-    def __init__(self, model_params_list: list, distribution: list, road_position=(0, 0), road_length=1000, road_lanes=2, road_lane_width=5, car_frequency=1, delta_t=0.1):
+    def __init__(self, model_params_list: list, road_position=(0, 0), road_length=1000, road_lanes=2, road_lane_width=5, car_frequency=1, delta_t=0.1):
         self.model_params_list = model_params_list
         self.delta_t = delta_t
-        self.road = Simulation.Road(model_params_list=model_params_list, distribution=distribution, position=road_position, lanewidth=road_lane_width, car_frequency=car_frequency, lanes=road_lanes, length=road_length)
-        self.distribution = distribution
+        self.road = Simulation.Road(model_params_list=model_params_list, position=road_position, lanewidth=road_lane_width, car_frequency=car_frequency, lanes=road_lanes, length=road_length)
 
     def step(self):
         self.road.update(delta_t=self.delta_t)
@@ -247,4 +247,3 @@ class Simulation:
             data.append([car.serialize() for car in self.step()])
 
         return data
-
