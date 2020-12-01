@@ -1,0 +1,3 @@
+Every few years the topic of a general speed limit on German highways is subject of controversial discussion: In 2020, 46% of ADAC (Allgemeiner Deutscher Automobil-Club) members were against, while 47% would were in favour of a general speed limit. The arguments against such a general speed limit include less travel time and higher throughput of cars through the highway, while arguments in favour of a general speed limit include less accidents and less traffic jams
+- Some arguments seem to contradict each other: No speed limit > higher throughput of cars and speed limit > less traffic jams, which also would imply a higher throughput. 
+- Why is it important: Current day and age, especially in Germany a lot of people have cars and use them (source?) > 
