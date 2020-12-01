@@ -201,6 +201,9 @@ class Simulation:
 
             self.carlist: list[Car] = [] # List of cars on the load
 
+            self.counterL = 0.01
+            self.counterR = 0.01
+
         def update(self, delta_t: float):
             """
             Update create cars and update all the cars in the list
@@ -211,14 +214,20 @@ class Simulation:
             if self.last_new_car_t >= 1.0/self.car_frequency:
                 self.last_new_car_t = 0
 
-                # Select random lane
-                lane = random.choice(range(self.lanes)) * self.lanewidth
+                # Select random lane, not anymore, b****, now it does verteilung thingy
+                lane = 0 * self.lanewidth if (random.random() < (self.counterL / (self.counterR + self.counterL))) else 1 * self.lanewidth
 
                 params = random.choice(self.modelParamsList)
                 newCar = Simulation.Car(modelParams=params, road=self, startpos=[self.position[0], self.position[1] + lane])
                 self.carlist.append(newCar)
 
+            self.counterL = 0.01
+            self.counterR = 0.01
             for car in self.carlist:
+                if car.pos[1] < self.lanewidth:
+                    self.counterL += 1
+                else:
+                    self.counterR += 1
                 car.updateLocal(delta_t)
 
             for car in self.carlist:
