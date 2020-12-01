@@ -201,24 +201,35 @@ class Simulation:
 
             self.carlist: list[Car] = [] # List of cars on the load
 
-        def update(self, delta_t: float):
+        def spawn_car(self):
+            """Create new car with the given frequency only if there is enough distance to the next car
+
+            Returns: True if a car could be spawned, False otherwise
             """
-            Update create cars and update all the cars in the list
-            """
 
-            # Create car with given frequency
-            self.last_new_car_t += delta_t
-            if self.last_new_car_t >= 1.0/self.car_frequency:
-                self.last_new_car_t = 0
+            # Select random lane
+            lane = random.choice(range(self.lanes)) * self.lanewidth
+            params = random.choice(self.model_params_list)
+            new_car = Simulation.Car(model_params=params, road=self, startpos=[self.position[0], self.position[1] + lane])
 
-                # Select random lane
-                lane = random.choice(range(self.lanes)) * self.lanewidth
+            car_front = new_car.get_cars_around()["frontNow"]
 
-                distribution = [m[1] for m in self.model_params_list]
-                models = [m[0] for m in self.model_params_list]
-                params = random.choices(models, weights=distribution, k=1)[0]
-                new_car = Simulation.Car(model_params=params, road=self, startpos=[self.position[0], self.position[1] + lane])
+            if car_front is not None:
+                t = (car_front.pos_back - new_car.pos_front) / new_car.v if new_car.v != 0 else new_car.driver.model_params.T
+                clipping = (car_front.pos_back - new_car.pos_front) <= 0
+            else:
+                t = new_car.driver.model_params.T
+                clipping = False
+
+            if t >= new_car.driver.model_params.T and not clipping:
                 self.carlist.append(new_car)
+                return True
+            else:
+                return False
+
+        def update(self, delta_t: float):
+            """Create cars and update all the cars in the list
+            """
 
             for car in self.carlist:
                 car.update_local(delta_t)
@@ -227,6 +238,10 @@ class Simulation:
                 car.update_global()
                 if car.rect.left > self.length + 100:
                     self.carlist.remove(car)
+
+            self.last_new_car_t += delta_t
+            if self.last_new_car_t >= 1.0/self.car_frequency and self.spawn_car():
+                self.last_new_car_t = 0
 
         def draw(self, screen):
             for car in self.carlist:
