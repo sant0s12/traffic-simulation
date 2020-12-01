@@ -14,9 +14,11 @@ class ModelParams:
         l: Vehicle length (l=1/p_max)
         thr: threshold for lane change
         p: politeness <1
+        fs: how many steps to wait if failing
+        fp: failure probability per step per car
     """
 
-    def __init__(self, v_0: float, s_0: float, s_1: float, T: float, a: float, b: float, delta: float, length: float, thr: float, pol: float):
+    def __init__(self, v_0: float, s_0: float, s_1: float, T: float, a: float, b: float, delta: float, length: float, thr: float, pol: float, fs: int, fp: float):
         self.v_0 = v_0
         self.s_0 = s_0
         self.s_1 = s_1
@@ -27,6 +29,8 @@ class ModelParams:
         self.length = length
         self.thr = thr
         self.pol = pol
+        self.fs = fs
+        self.fp = fp
 
 class Driver:
     """Driver Class to following the Intelligent Driver Model
@@ -38,21 +42,21 @@ class Driver:
         modelParams: model parameters
     """
 
-    def __init__(self, modelParams: ModelParams):
-        self.modelParams = modelParams
+    def __init__(self, model_params: ModelParams):
+        self.model_params = model_params
 
-    def __s_star(modelParams: ModelParams, v, delta_v):
-        s_star = (modelParams.s_0
-                + modelParams.s_1 * math.sqrt(v/modelParams.v_0)
-                + modelParams.T * v
-                + (v + delta_v) / (2 * math.sqrt(modelParams.a * modelParams.b)))
+    def __s_star(model_params: ModelParams, v, delta_v):
+        s_star = (model_params.s_0
+                + model_params.s_1 * math.sqrt(v/model_params.v_0)
+                + model_params.T * v
+                + (v + delta_v) / (2 * math.sqrt(model_params.a * model_params.b)))
 
         return s_star
 
-    def getAccel(self, v, other_v, s):
+    def get_accel(self, v, other_v, s):
         delta_v = v - other_v
-        s_star = Driver.__s_star(modelParams=self.modelParams, v=v, delta_v=delta_v)
-        accel = (self.modelParams.a * (1 - math.pow(v/self.modelParams.v_0, self.modelParams.delta) - math.pow(s_star/s, 2)))
+        s_star = Driver.__s_star(model_params=self.model_params, v=v, delta_v=delta_v)
+        accel = (self.model_params.a * (1 - math.pow(v/self.model_params.v_0, self.model_params.delta) - math.pow(s_star/s, 2)))
 
         return accel
 
@@ -61,12 +65,12 @@ class Driver:
         accelBefore = self.getAccel(v, velOtherBefore, distOtherBefore)
         return (accelBefore - accelAfter, accelAfter)
 
-    def changeLane(self, left: bool, v: float, distFrontBefore: float, velFrontBefore:float, distFrontAfter:float, velFrontAfter: float, disadvantageBehindAfter:float, accelBehindAfter:float):
+    def change_lane(self, left: bool, v: float, dist_front_before: float, vel_front_before:float, dist_front_after:float, vel_front_after: float, disadvantage_behind_after:float, accel_behind_after:float):
         delta = 0.2
         delta = delta if left else 0
-        accelAfter = self.getAccel(v, velFrontAfter, distFrontBefore)
-        accelBefore = self.getAccel(v, velFrontBefore, distFrontBefore)
-        advantage = accelAfter - accelBefore
-        incentive = advantage > self.modelParams.pol * disadvantageBehindAfter + self.modelParams.thr + delta
-        safe = accelBehindAfter > -self.modelParams.b
+        accel_after = self.get_accel(v, vel_front_after, dist_front_before)
+        accel_before = self.get_accel(v, vel_front_before, dist_front_before)
+        advantage = accel_after - accel_before
+        incentive = advantage > self.model_params.pol * disadvantage_behind_after + self.model_params.thr + delta
+        safe = accel_behind_after > -self.model_params.b
         return incentive & safe
