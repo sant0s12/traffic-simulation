@@ -1,6 +1,7 @@
 import warnings
 import pygame
 import random
+import numpy as np
 from DriverModel import Driver
 
 BLACK = (0, 0, 0)
@@ -37,7 +38,7 @@ class Params:
         self.pol = kwargs.pop('pol', (0.5, 1))
 
         # Distribution never applied to these params
-        self.start_v = kwargs.pop('start_v', self.v_0)
+        self.start_v = kwargs.pop('start_v', None)
         self.fail_p = kwargs.pop('fail_p', 0)
         self.fail_steps = kwargs.pop('fail_steps', 0)
         self.spawn_weight = kwargs.pop('spawn_weight', 10)
@@ -60,7 +61,7 @@ class Params:
         thr = np.random.normal(self.thr[0], self.thr[1]) if hasattr(self.thr, '__getitem__') else self.thr
         pol = np.random.normal(self.pol[0], self.pol[1]) if hasattr(self.pol, '__getitem__') else self.pol
 
-        start_v = self.start_v
+        start_v = self.start_v if self.start_v is not None else v_0
         fail_p = self.fail_p
         fail_steps = self.fail_steps
         spawn_weight = self.spawn_weight
