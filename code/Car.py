@@ -36,11 +36,11 @@ class Params:
         self.length = kwargs.pop('length', (5, 1))
         self.thr = kwargs.pop('thr', 0.2)
         self.pol = kwargs.pop('pol', (0.5, 1))
+        self.fail_p = kwargs.pop('fail_p', 0)
 
         # Distribution never applied to these params
         self.start_v = kwargs.pop('start_v', None)
-        self.fail_p = kwargs.pop('fail_p', 0)
-        self.fail_steps = kwargs.pop('fail_steps', 0)
+        self.fail_steps = kwargs.pop('fail_steps', 1)
         self.spawn_weight = kwargs.pop('spawn_weight', 10)
 
         if len(kwargs) > 0:
@@ -50,19 +50,21 @@ class Params:
         """Applies the distribution and returns a Params object with fixed values
         """
 
-        v_0 = np.random.normal(self.v_0[0], self.v_0[1]) if hasattr(self.v_0, '__getitem__') else self.v_0
-        s_0 = np.random.normal(self.s_0[0], self.s_0[1]) if hasattr(self.s_0, '__getitem__') else self.s_0
-        s_1 = np.random.normal(self.s_1[0], self.s_1[1]) if hasattr(self.s_1, '__getitem__') else self.s_1
-        T = np.random.normal(self.T[0], self.T[1]) if hasattr(self.T, '__getitem__') else self.T
-        a = np.random.normal(self.a[0], self.a[1]) if hasattr(self.a, '__getitem__') else self.a
-        b = np.random.normal(self.b[0], self.b[1]) if hasattr(self.b, '__getitem__') else self.b
-        delta = np.random.normal(self.delta[0], self.delta[1]) if hasattr(self.delta, '__getitem__') else self.delta
-        length = np.random.normal(self.length[0], self.length[1]) if hasattr(self.length, '__getitem__') else self.length
-        thr = np.random.normal(self.thr[0], self.thr[1]) if hasattr(self.thr, '__getitem__') else self.thr
-        pol = np.random.normal(self.pol[0], self.pol[1]) if hasattr(self.pol, '__getitem__') else self.pol
+        positive_normal = lambda avg, dev: abs(np.random.normal(avg, dev))
+
+        v_0 = positive_normal(self.v_0[0], self.v_0[1]) if hasattr(self.v_0, '__getitem__') else self.v_0
+        s_0 = positive_normal(self.s_0[0], self.s_0[1]) if hasattr(self.s_0, '__getitem__') else self.s_0
+        s_1 = positive_normal(self.s_1[0], self.s_1[1]) if hasattr(self.s_1, '__getitem__') else self.s_1
+        T = positive_normal(self.T[0], self.T[1]) if hasattr(self.T, '__getitem__') else self.T
+        a = positive_normal(self.a[0], self.a[1]) if hasattr(self.a, '__getitem__') else self.a
+        b = positive_normal(self.b[0], self.b[1]) if hasattr(self.b, '__getitem__') else self.b
+        delta = positive_normal(self.delta[0], self.delta[1]) if hasattr(self.delta, '__getitem__') else self.delta
+        length = positive_normal(self.length[0], self.length[1]) if hasattr(self.length, '__getitem__') else self.length
+        thr = positive_normal(self.thr[0], self.thr[1]) if hasattr(self.thr, '__getitem__') else self.thr
+        pol = positive_normal(self.pol[0], self.pol[1]) if hasattr(self.pol, '__getitem__') else self.pol
+        fail_p = positive_normal(self.fail_p[0], self.fail_p[1]) if hasattr(self.fail_p, '__getitem__') else self.fail_p
 
         start_v = self.start_v if self.start_v is not None else v_0
-        fail_p = self.fail_p
         fail_steps = self.fail_steps
         spawn_weight = self.spawn_weight
 
@@ -243,4 +245,4 @@ class Car(pygame.sprite.Sprite):
         rect: pygame rect (for displaying it later)
         surface: pygame surface (for displaying it later)
         """
-        return {'pos': self.pos, 'v': self.v, 'accel': self.__accel, 'rect': self.rect.copy(), 'surface': self.surface.copy()}
+        return {'pos': self.pos, 'v': self.v, 'accel': self.__accel, 'length': self.params.length}
