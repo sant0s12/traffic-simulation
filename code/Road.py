@@ -65,7 +65,7 @@ class Road:
 
         for car in self.carlist:
             car.update_global()
-            if car.rect.left > self.length:
+            if car.pos_back > self.length:
                 self.carlist.remove(car)
                 car_reached_end = True
 

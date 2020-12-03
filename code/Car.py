@@ -1,5 +1,4 @@
 import warnings
-import pygame
 import random
 import numpy as np
 from DriverModel import Driver
@@ -71,7 +70,7 @@ class Params:
         return Params(v_0=v_0, s_0=s_0, s_1=s_1, T=T, a=a, b=b, delta=delta, length=length,
                       thr=thr, pol=pol, start_v=start_v, fail_p=fail_p, fail_steps=fail_steps, spawn_weight=spawn_weight)
 
-class Car(pygame.sprite.Sprite):
+class Car:
     """Car game object
 
     Args:
@@ -82,18 +81,11 @@ class Car(pygame.sprite.Sprite):
     """
 
     def __init__(self, params: Params, road: 'Road', startpos):
-        super(Car, self).__init__()
         self.params = params.apply_dist()
-
-        self.surface = pygame.Surface((self.params.length, 2))
-        self.surface.fill(WHITE)
-        self.rect = self.surface.get_rect()
 
         self.pos = startpos
         self.pos_back = self.pos[0] - self.params.length / 2
         self.pos_front = self.pos[0] + self.params.length / 2
-
-        self.rect.center = startpos
 
         self.road = road
         self.v = self.params.start_v
@@ -227,14 +219,6 @@ class Car(pygame.sprite.Sprite):
         self.pos_front = self.pos[0] + self.driver.params.length / 2
 
         self.v = self.__v
-        self.rect.center = self.pos.copy()
-
-    def draw(self, screen):
-        """
-        Draw onto the screen
-        """
-
-        return screen.blit(self.surface, self.rect)
 
     def serialize(self):
         """Serialize the car

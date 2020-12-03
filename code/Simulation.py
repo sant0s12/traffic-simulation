@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from tqdm import tqdm
 from Road import Road
+from collections import deque
 
 class Simulation:
 
@@ -16,7 +17,7 @@ class Simulation:
         return self.road.carlist
 
     def run(self, time=None):
-        data = []
+        data = deque()
         if time is not None:
             for t in tqdm(np.arange(0, time, self.delta_t)):
                 data.append([car.serialize() for car in self.step()])
@@ -31,6 +32,7 @@ class Simulation:
                         first_car = car if first_car is None or car.pos[0] > first_car.pos[0] else first_car
                     data.append(cars_step)
                     if first_car is not None:
+                        pbar.set_description("#cars: " + str(len(self.road.carlist)))
                         pbar.update(int(first_car.pos[0]) - lastpos)
                         lastpos = int(first_car.pos[0])
-        return data
+        return list(data)
