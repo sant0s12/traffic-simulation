@@ -58,18 +58,22 @@ class Road:
     def update(self, delta_t: float):
         """Create cars and update all the cars in the list
         """
+        car_reached_end = False
 
         for car in self.carlist:
             car.update_local(delta_t)
 
         for car in self.carlist:
             car.update_global()
-            if car.rect.left > self.length:
+            if car.pos_back > self.length:
                 self.carlist.remove(car)
+                car_reached_end = True
 
         self.last_new_car_t += delta_t
         if self.last_new_car_t >= 1.0/self.car_frequency and self.spawn_car():
             self.last_new_car_t = 0
+
+        return car_reached_end
 
     def draw(self, screen):
         for car in self.carlist:
