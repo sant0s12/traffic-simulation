@@ -18,7 +18,6 @@ def make_filename(f):
     fsplit = f.rsplit(".", 1)
     name = fsplit[0]
     ext = fsplit[1] if len(fsplit) > 1 else ""
-
     suff = ""
     i = 1
     while os.path.isfile(f'{name}{suff}.{ext}'): suff = i ; i += 1
@@ -71,15 +70,16 @@ def show_pygame(data):
         CLOCK.tick(1./DELTA_T * SPEED)
 
 if __name__ == "__main__":
-    road_length = 50000
-    a = Params(v_0=(30, 3), s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5)
-    sim = Simulation(params_list=[a], delta_t=DELTA_T, car_frequency=1.5, road_length=road_length, road_lanes=1)
+    road_length = 5000
+    a = Params(v_0=(30, 3), s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5, spawn_weight=1000, right_bias=0.41)
+    b = Params(v_0=10, s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=10, thr=0.4, pol=0.5, spawn_weight=20, right_bias=0.41)
+    sim = Simulation(params_list=[a, b], delta_t=DELTA_T, car_frequency=1.5, road_length=road_length, road_lanes=2)
 
     filename = "testing.json"
     data = read_data(filename)
     if data is None:
         data = sim.run()
-        save_data(data, filename)
+        #save_data(data, filename)
 
     show_pygame(data)
 

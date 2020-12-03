@@ -36,6 +36,7 @@ class Params:
         self.thr = kwargs.pop('thr', 0.2)
         self.pol = kwargs.pop('pol', (0.5, 1))
         self.fail_p = kwargs.pop('fail_p', 0)
+        self.right_bias = kwargs.pop('right_bias', 0.3)
 
         # Distribution never applied to these params
         self.start_v = kwargs.pop('start_v', None)
@@ -62,13 +63,14 @@ class Params:
         thr = positive_normal(self.thr[0], self.thr[1]) if hasattr(self.thr, '__getitem__') else self.thr
         pol = positive_normal(self.pol[0], self.pol[1]) if hasattr(self.pol, '__getitem__') else self.pol
         fail_p = positive_normal(self.fail_p[0], self.fail_p[1]) if hasattr(self.fail_p, '__getitem__') else self.fail_p
+        right_bias = positive_normal(self.right_bias[0], self.right_bias[1]) if hasattr(self.right_bias, '__getitem__') else self.right_bias
 
         start_v = self.start_v if self.start_v is not None else v_0
         fail_steps = self.fail_steps
         spawn_weight = self.spawn_weight
 
         return Params(v_0=v_0, s_0=s_0, s_1=s_1, T=T, a=a, b=b, delta=delta, length=length,
-                      thr=thr, pol=pol, start_v=start_v, fail_p=fail_p, fail_steps=fail_steps, spawn_weight=spawn_weight)
+                      thr=thr, pol=pol, start_v=start_v, fail_p=fail_p, right_bias=right_bias, fail_steps=fail_steps, spawn_weight=spawn_weight)
 
 class Car:
     """Car game object

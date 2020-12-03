@@ -34,9 +34,8 @@ class Driver:
         return (accel_before - accel_after, accel_after)
 
     def change_lane(self, left: bool, v: float, dist_front_before: float, vel_front_before:float, dist_front_after:float, vel_front_after: float, disadvantage_behind_after:float, accel_behind_after:float):
-        delta = 0.2
-        delta = delta if left else 0
-        accel_after = self.get_accel(v, vel_front_after, dist_front_before)
+        delta = self.params.right_bias if left else -self.params.right_bias
+        accel_after = self.get_accel(v, vel_front_after, dist_front_after)
         accel_before = self.get_accel(v, vel_front_before, dist_front_before)
         advantage = accel_after - accel_before
         incentive = advantage > self.params.pol * disadvantage_behind_after + self.params.thr + delta
