@@ -1,6 +1,6 @@
 import sys
 import pygame
-import pickle
+import json
 import os.path
 from Simulation import Simulation
 from DriverModel import Driver
@@ -32,11 +32,11 @@ def make_filename(f):
     return f'{name}{suff}.{ext}'
 
 def save_data(data, filename, overwrite=False):
-    pickle.dump(data, open(make_filename(filename) if not overwrite else filename, "wb"))
+    json.dump(data, open(make_filename(filename) if not overwrite else filename, "w"))
 
 def read_data(filename):
     if not os.path.isfile(filename): return None
-    else: return pickle.load(open(filename, "rb"))
+    else: return json.load(open(filename, "r"))
 
 def dots_to_image(pixel_plot, filename, overwrite=False):
     from PIL import Image
@@ -46,17 +46,17 @@ def dots_to_image(pixel_plot, filename, overwrite=False):
     img.save(filename)
 
 if __name__ == "__main__":
-    road_length = 500000
-    a = Params(v_0=(30, 1), s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5)
+    road_length = 50000
+    a = Params(v_0=(30, 3), s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5)
     sim = Simulation(params_list=[a], delta_t=DELTA_T, car_frequency=1.5, road_length=road_length, road_lanes=1)
 
-    filename = "testing.p"
+    filename = "testing.json"
     data = read_data(filename)
     if data is None:
         data = sim.run(1000)
         save_data(data, filename)
 
-    dotgraph = Metrics.make_dots(data, road_length, 1, 5)
+    dotgraph = Metrics.make_dots(data, road_length, time_div=5, delta_x=20)
     dots_to_image(dotgraph, "dot_image.png")
     # Metrics.show_dots(dotgraph)
 

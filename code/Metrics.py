@@ -50,12 +50,12 @@ class Metrics:
             delta_x: minimum change in distance (how much distance a pixel represents)
         """
 
-        pixel_plot = np.zeros((len(car_data[::time_div]), round(road_length/delta_x)))
+        pixel_plot = np.ones((len(car_data[::time_div]), round(road_length/delta_x)))
         for i, data_t in enumerate(car_data[::time_div]):
             for car in data_t:
                 x = int(np.floor(car['pos'][0]/delta_x))
                 if car['pos'][1] != 0 or x >= pixel_plot.shape[1]:  continue
-                pixel_plot[i][x] = 1
+                pixel_plot[i][x] = 0
         return pixel_plot
 
     def show_dots(pixel_plot):
