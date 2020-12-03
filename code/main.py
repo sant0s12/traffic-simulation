@@ -46,17 +46,17 @@ def dots_to_image(pixel_plot, filename, overwrite=False):
     img.save(filename)
 
 if __name__ == "__main__":
-    road_length = 50000
+    road_length = 8000
     a = Params(v_0=(30, 3), s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5)
     sim = Simulation(params_list=[a], delta_t=DELTA_T, car_frequency=1.5, road_length=road_length, road_lanes=1)
 
     filename = "testing.json"
     data = read_data(filename)
     if data is None:
-        data = sim.run(1000)
+        data = sim.run()
         save_data(data, filename)
 
-    dotgraph = Metrics.make_dots(data, road_length, time_div=5, delta_x=20)
+    dotgraph = Metrics.make_dots(data, road_length, time_div=1, delta_x=10)
     dots_to_image(dotgraph, "dot_image.png")
     # Metrics.show_dots(dotgraph)
 
