@@ -51,8 +51,10 @@ class Params:
     def apply_dist(self):
         """Applies the distribution and returns a Params object with fixed values
         """
-
-        positive_normal = lambda avg, dev: abs(np.random.normal(avg, dev))
+        
+        def positive_normal(avg, dev):
+            a = abs(np.random.normal(avg, dev))
+            return a if avg-w*dev <= a <= avg+w*dev else avg
 
         v_0 = positive_normal(self.v_0[0], self.v_0[1]) if hasattr(self.v_0, '__getitem__') else self.v_0
         s_0 = positive_normal(self.s_0[0], self.s_0[1]) if hasattr(self.s_0, '__getitem__') else self.s_0
