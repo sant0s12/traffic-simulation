@@ -96,6 +96,21 @@ if __name__ == "__main__":
                         spawn_weight=7886)
 
     limits = [80, 100, 120, 140]
+    data_list = []
+    for l in limits:
+        filename=f'speedlimit_{l}.json'
+        data = read_data(filename=filename)
+        if data is None:
+            print(f'Running simulation for speedlimit={l}')
+            filename = make_filename(filename)
+            car_params.v_0 = (l, 5)
+            trucc_params.v_0 = (min(l, 80), 2.5)
 
-    sim = Simulation([car_params, trucc_params], road_length=road_length, car_frequency=2, delta_t=delta_t)
-    data = sim.run()
+            sim = Simulation([car_params, trucc_params], road_length=road_length, car_frequency=2, delta_t=delta_t)
+            data = sim.run()
+            save_data(data, filename)
+        data_list.append(data)
+    
+    avg = []
+    for data in data_list:
+        avg.append(Metrics.avg_speed(data))
