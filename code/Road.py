@@ -1,4 +1,8 @@
+
+import numpy as np
+
 import random
+
 import Car
 
 class Road:
@@ -33,11 +37,13 @@ class Road:
         """
 
         # Select random lane
-        lane = random.choice(range(self.lanes)) * self.lanewidth
 
-        distribution = [m.spawn_weight for m in self.params_list]
+        lane = int(np.random.choice(range(self.lanes)) * self.lanewidth)
+
+        distribution = np.array([m.spawn_weight for m in self.params_list])
         models = [m for m in self.params_list]
-        params = random.choices(models, weights=distribution, k=1)[0]
+        params = np.random.choice(models, p=(distribution/distribution.sum()))
+
         new_car = Car.Car(params=params.apply_dist(), road=self, startpos=[self.position[0], self.position[1] + lane])
 
         car_front = new_car.get_cars_around()["frontNow"]
@@ -46,10 +52,12 @@ class Road:
             t = (car_front.pos_back - new_car.pos_front) / new_car.v if new_car.v != 0 else new_car.params.T
             clipping = (car_front.pos_back - new_car.pos_front) <= 0
         else:
-            t = new_car.params.T
+
+            t = new_car.params.T+2
             clipping = False
 
-        if t >= new_car.params.T and not clipping:
+        if t >= new_car.params.T +2 and not clipping:
+
             self.carlist.append(new_car)
             return True
         else:

@@ -36,8 +36,21 @@ def dots_to_image(pixel_plot, filename, overwrite=False):
     from PIL import Image
     filename = (make_filename(filename) if not overwrite else filename)
 
-    img = Image.fromarray(pixel_plot.astype('uint8') * 255, mode='L')
+
+    img = Image.fromarray(pixel_plot.astype('uint8'), mode='RGB')
     img.save(filename)
+
+def dots_to_image_notSaved(pixel_plot):
+    from PIL import Image
+
+    return Image.fromarray(pixel_plot.astype('uint8'), mode='RGB')
+
+def combine_and_Save(img1, img2, filename, overwrite = False):
+    from PIL import Image
+    filename = (make_filename(filename) if not overwrite else filename)
+    img = Image.blend(img1, img2, 0.5)
+    new_image = img.resize((int(img.width * 1),int(img.height *0.2) ), resample= Image.BILINEAR)
+    new_image.save(filename)
 
 def show_pygame(data):
     import pygame
@@ -70,18 +83,25 @@ def show_pygame(data):
         CLOCK.tick(1./DELTA_T * SPEED)
 
 if __name__ == "__main__":
-    road_length = 5000
-    a = Params(v_0=(30, 3), s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=5, thr=0.4, pol=0.5, spawn_weight=1000, right_bias=0.41)
-    b = Params(v_0=10, s_0=2, s_1=0, T=1.6, a=2, b=1.67, delta=4, length=10, thr=0.4, pol=0.5, spawn_weight=20, right_bias=0.41)
-    sim = Simulation(params_list=[a, b], delta_t=DELTA_T, car_frequency=1.5, road_length=road_length, road_lanes=2)
 
-    filename = "testing.json"
+    road_length = 15000
+    a = Params(v_0=(38.8889, 11.1111), s_0=2, s_1=0, T=2, a=0.85, b=3, delta=4, length=5, thr=0.4, pol=0.5, spawn_weight=1000, right_bias=0.41, fail_p=0.0001, fail_steps = 2000)
+    b = Params(v_0=25, s_0=2, s_1=0, T=2, a=0.85, b=2, delta=4, length=15, thr=0.4, pol=0.5, spawn_weight=40, right_bias=0.41, fail_p = 0, fail_steps = 2000)
+    sim = Simulation(params_list=[a,b], delta_t=DELTA_T, car_frequency=1.8, road_length=road_length, road_lanes=2)
+
+    filename = "output.json"
     data = read_data(filename)
     if data is None:
         data = sim.run()
-        #save_data(data, filename)
+        save_data(data, filename)
 
-    show_pygame(data)
 
-    #dotgraph = Metrics.make_dots(data, road_length, time_div=1, delta_x=10)
-    #dots_to_image(dotgraph, "dot_image.png")
+    black = (0, 0, 0)
+    white = (255, 255, 255)
+
+    dotgraph = Metrics.make_dots(data, road_length, time_div=1, delta_x=10, colors=[black, white])
+    left =dots_to_image_notSaved(dotgraph)
+    dotgraph = Metrics.make_dots(data, road_length, time_div=1, delta_x=10, colors=[white, black])
+    right =dots_to_image_notSaved(dotgraph)
+    combine_and_Save(left,right,"demonstration.png")
+

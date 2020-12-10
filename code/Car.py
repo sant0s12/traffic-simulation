@@ -1,5 +1,7 @@
 import warnings
+
 import random
+
 import numpy as np
 from DriverModel import Driver
 
@@ -171,7 +173,8 @@ class Car:
         Update local state
         """
 
-        if self.failing or (random.random() < self.params.fail_p):
+        if self.failing or (np.random.random() < self.params.fail_p):
+
             self.failing = True
             if self.steps_left > 0:
                 self.steps_left -= 1

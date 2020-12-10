@@ -40,7 +40,9 @@ class Metrics:
             median_list.append(np.average(speed_array))
         return median_list
 
-    def make_dots(car_data: list, road_length: int, time_div: float, delta_x: float):
+
+    def make_dots(car_data: list, road_length: int, time_div: float, delta_x: float, colors: list):
+
         """Make car dot plot
 
         Args:
@@ -50,12 +52,20 @@ class Metrics:
             delta_x: minimum change in distance (how much distance a pixel represents)
         """
 
-        pixel_plot = np.ones((len(car_data[::time_div]), round(road_length/delta_x)))
+        black = (0, 0, 0)
+        red = (0, 0, 0)
+        white = (255, 255, 255)
+        blue = (0, 0, 0)
+
+
+        pixel_plot = np.full((len(car_data[::time_div]), round(road_length/delta_x), 3), (255., 255., 255.))
         for i, data_t in enumerate(car_data[::time_div]):
             for car in data_t:
                 x = int(np.floor(car['pos'][0]/delta_x))
-                if car['pos'][1] != 0 or x >= pixel_plot.shape[1]:  continue
-                pixel_plot[i][x] = 0
+                if x >= pixel_plot.shape[1]:  continue
+                pixel_plot[i][x] *= colors[int(car['pos'][1]/5)]
+                pixel_plot[i][x] = pixel_plot[i][x] * (255 / max(0.00001, pixel_plot[i][x].max()))
+
         return pixel_plot
 
     def show_dots(pixel_plot):
