@@ -36,6 +36,7 @@ def dots_to_image(pixel_plot, filename, overwrite=False):
     from PIL import Image
     filename = (make_filename(filename) if not overwrite else filename)
 
+
     img = Image.fromarray(pixel_plot.astype('uint8'), mode='RGB')
     img.save(filename)
 
@@ -82,6 +83,7 @@ def show_pygame(data):
         CLOCK.tick(1./DELTA_T * SPEED)
 
 if __name__ == "__main__":
+
     road_length = 15000
     a = Params(v_0=(38.8889, 11.1111), s_0=2, s_1=0, T=2, a=0.85, b=3, delta=4, length=5, thr=0.4, pol=0.5, spawn_weight=1000, right_bias=0.41, fail_p=0.0001, fail_steps = 2000)
     b = Params(v_0=25, s_0=2, s_1=0, T=2, a=0.85, b=2, delta=4, length=15, thr=0.4, pol=0.5, spawn_weight=40, right_bias=0.41, fail_p = 0, fail_steps = 2000)
@@ -102,4 +104,4 @@ if __name__ == "__main__":
     dotgraph = Metrics.make_dots(data, road_length, time_div=1, delta_x=10, colors=[white, black])
     right =dots_to_image_notSaved(dotgraph)
     combine_and_Save(left,right,"demonstration.png")
-    
+

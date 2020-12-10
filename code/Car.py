@@ -1,4 +1,7 @@
 import warnings
+
+import random
+
 import numpy as np
 from DriverModel import Driver
 
@@ -171,6 +174,7 @@ class Car:
         """
 
         if self.failing or (np.random.random() < self.params.fail_p):
+
             self.failing = True
             if self.steps_left > 0:
                 self.steps_left -= 1
