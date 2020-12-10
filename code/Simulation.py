@@ -33,6 +33,6 @@ class Simulation:
                     data.append(cars_step)
                     if first_car is not None:
                         pbar.set_description("#cars: " + str(len(self.road.carlist)))
-                        pbar.update(int(first_car.pos[0]) - lastpos)
+                        pbar.update(max(int(first_car.pos[0]) - lastpos, 0))
                         lastpos = int(first_car.pos[0])
         return list(data)
