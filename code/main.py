@@ -83,25 +83,19 @@ def show_pygame(data):
         CLOCK.tick(1./DELTA_T * SPEED)
 
 if __name__ == "__main__":
+    road_length = 50000
+    delta_t = 0.5
 
-    road_length = 15000
-    a = Params(v_0=(38.8889, 11.1111), s_0=2, s_1=0, T=2, a=0.85, b=3, delta=4, length=5, thr=0.4, pol=0.5, spawn_weight=1000, right_bias=0.41, fail_p=0.0001, fail_steps = 2000)
-    b = Params(v_0=25, s_0=2, s_1=0, T=2, a=0.85, b=2, delta=4, length=15, thr=0.4, pol=0.5, spawn_weight=40, right_bias=0.41, fail_p = 0, fail_steps = 2000)
-    sim = Simulation(params_list=[a,b], delta_t=DELTA_T, car_frequency=1.8, road_length=road_length, road_lanes=2)
+    # With speed limit
+    car_params = Params(T=(1.4, 0.3), a=(1.65, 0.425), b=(2.5, 0.25), delta=4, s_0=2, s_1=0, length=(4.55, 0.175),
+                        thr=(0.3, 0.1), pol=(0.25, 0.125), fail_p=1e-6, right_bias=(0.3, 0.1), fail_steps=600,
+                        spawn_weight=139829)
 
-    filename = "output.json"
-    data = read_data(filename)
-    if data is None:
-        data = sim.run()
-        save_data(data, filename)
+    trucc_params = Params(T=(1.6, 0.3), a=(1, 0.1), b=(1.5, 0.25), delta=4, s_0=2, s_1=0, length=(16.5, 1.25),
+                        thr=(0.3, 0.1), pol=(0.25, 0.125), fail_p=1e-6, right_bias=(0.3, 0.1), fail_steps=1200,
+                        spawn_weight=7886)
 
+    limits = [80, 100, 120, 140]
 
-    black = (0, 0, 0)
-    white = (255, 255, 255)
-
-    dotgraph = Metrics.make_dots(data, road_length, time_div=1, delta_x=10, colors=[black, white])
-    left =dots_to_image_notSaved(dotgraph)
-    dotgraph = Metrics.make_dots(data, road_length, time_div=1, delta_x=10, colors=[white, black])
-    right =dots_to_image_notSaved(dotgraph)
-    combine_and_Save(left,right,"demonstration.png")
-
+    sim = Simulation([car_params, trucc_params], road_length=road_length, car_frequency=2, delta_t=delta_t)
+    data = sim.run()
