@@ -2,25 +2,25 @@
 
 > * Group Name: The Traffic Team
 > * Group participants names: Diego De los Santos, Daniel Nezamabadi, Natalie Suter, Róbert Veres, Victor Vitéz
-> * Project Title: Effects of a general speed limit on two-lane highway throughput
+> * Project Title: Effects of a general speed limit on two-lane highway traffic
 
 ## General Introduction
   
-Highways are an important part of our infrastructure and are used by a lot of people every day for different reasons: To commute to work, transport goods and to go on holidays. Thus a general speed limit may have significant consequences for many people. In particular, we want to analyze the effects of a general speed limit on the throughput of a two-lane highway.  
+Highways are an important part of our infrastructure and are used by a lot of people every day for different reasons: To commute to work, transport goods and to go on holidays. Thus a general speed limit may have significant consequences for many people. In particular, we want to analyze the effects of a general speed limit on two-lane highway traffic.  
 While many (European) countries have a general speed limit in place, Germany is one of few countries that doesn't have such a limit and where controversial debates surrounding a general speed limit happen regularly [5, 6]. Both sides seemingly use the same argument: A general speed limit decreases travel time by reducing traffic congestion, while without such a speed limit travel time is decreased because people can drive faster and thus reach their destination quicker. We want to see which of the argumentations hold. 
 
 ## The Model
 
 We model a straight two-lane highway, where cars enter from the left and exit to the right. To determine the acceleration of each car at a given time step, we use the Intelligent Driver Model (IDM) [1, 3]. Since we are modeling a two-lane highway, we also need to model lane-changing behaviour. This is achieved by utilizing the lane-changing model MOBIL [2, 4].  
-To analyse the results of our simulation, we define our independent variables as time, if a general speed limit is in place and the proportions of different types of vehicles, and our dependent variables as the location of cars and their associated velocity/acceleration at a given time step. The dependent variables can easily be measured by storing the corresponding parameters at every time step in a file.  
+To analyse the results of our simulation, we define our independent variables as time, the speedlimit, the deviation from the speedlimit/average speed and the probability of disturbances, and our dependent variables as the location of cars and their associated velocity/acceleration at a given time step. The dependent variables can easily be measured by storing the corresponding parameters at every time step in a file.  
 
 
 ## Fundamental Questions
 
-- How does a general speed limit affect highway throughput?
-- Does a general speed limit increase or decrease the average travel time?
-- How does the effect of a general speed limit on highway throughput change with varying proportions and types of drivers?
-- Is there a difference in response to "forced" speed changes (sudden stop of a car) with and without a general speed limit? If yes, what are those differences?
+- How does a general speed limit affect highway traffic?
+- Does a general speed limit increase or decrease the average velocity?
+- How does the effect of a general speed limit on highway throughput change with varying velocities?
+- Is there a difference in response to disturbances with and without a general speed limit? If yes, what are those differences?
 
 
 ## Expected Results
