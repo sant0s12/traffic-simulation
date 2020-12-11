@@ -93,6 +93,7 @@ class Metrics:
 
     def plot_bins(bins, data, filename):
         import matplotlib.pyplot as plt
+        bins = min(bins, len(data))
         plot_data = np.array(data)
         plot_data = np.resize(plot_data, int(np.floor(plot_data.size/bins) * bins))
         plot_data = plot_data.reshape(-1, int(plot_data.size/bins))
@@ -108,7 +109,6 @@ class Metrics:
         width = (1 - margin) / data.shape[0]
 
         for i, d in enumerate(data):
-            print(d)
             plt.bar([x + i*width for x in range(data.shape[1])], d, width=width, label=type_labels[i])
 
         plt.xticks([x + ((width * data.shape[0])/2) - width/2 for x in range(data.shape[1])], xticks)
