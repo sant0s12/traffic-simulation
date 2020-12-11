@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>Traffic Simulation.Car API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>Traffic Simulation.Car</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import warnings
+
+import random
+
+import numpy as np
+from DriverModel import Driver
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+class Params:
+    &#34;&#34;&#34;Class to store the Car parameters, including IDM parameters
+
+    Kwargs:
+        If arg is passed as tuple, then first value is the average and second is the standard deviation (with cuttof at 2 sigma)
+
+        v_0: Desired velocity
+        s_0: Jam distance
+        s_1: Jam Distance
+        T: Safe time headway
+        a: Maximum acceleration
+        b: Desierd acceleration
+        delta: Acceleration exponent
+        length: Vehicle length
+        thr: threshold for lane change
+        pol: politeness &lt;1
+        fail_p: Probability of failure per step
+        right_bias: Bias to switch to the right lane
+        start_v: Starging speed when spawned
+        fail_steps: Steps the car will be stationary
+        spawn_weight: Defines the weighted probability that this car will spawn
+    &#34;&#34;&#34;
+
+    def __init__(self, **kwargs):
+        self.v_0 = kwargs.pop(&#39;v_0&#39;, (30, 1))
+        self.s_0 = kwargs.pop(&#39;s_0&#39;, (2, 1))
+        self.s_1 = kwargs.pop(&#39;s_1&#39;, 0)
+        self.T = kwargs.pop(&#39;T&#39;, (1.5, 1))
+        self.a = kwargs.pop(&#39;a&#39;, (2, 1))
+        self.b = kwargs.pop(&#39;b&#39;, (3, 1))
+        self.delta = kwargs.pop(&#39;delta&#39;, 4)
+        self.length = kwargs.pop(&#39;length&#39;, (5, 1))
+        self.thr = kwargs.pop(&#39;thr&#39;, 0.2)
+        self.pol = kwargs.pop(&#39;pol&#39;, (0.5, 1))
+        self.fail_p = kwargs.pop(&#39;fail_p&#39;, 0)
+        self.right_bias = kwargs.pop(&#39;right_bias&#39;, 0.3)
+
+        # Distribution never applied to these params
+        self.start_v = kwargs.pop(&#39;start_v&#39;, None)
+        self.fail_steps = kwargs.pop(&#39;fail_steps&#39;, 1)
+        self.spawn_weight = kwargs.pop(&#39;spawn_weight&#39;, 10)
+
+        if len(kwargs) &gt; 0:
+            for arg in kwargs.keys(): warnings.warn(&#34;Unexpected kwarg &#34; + arg)
+
+    def apply_dist(self):
+        &#34;&#34;&#34;Applies the distribution and returns a Params object with fixed values
+        &#34;&#34;&#34;
+        
+        # Make sure we get no negative values and that we cut off at 2 sigma (then the average will be chosen)
+        def positive_normal(avg, dev):
+            a = abs(np.random.normal(avg, dev))
+            return a if avg-2*dev &lt;= a &lt;= avg+2*dev else avg
+
+        v_0 = positive_normal(self.v_0[0], self.v_0[1]) if hasattr(self.v_0, &#39;__getitem__&#39;) else self.v_0
+        s_0 = positive_normal(self.s_0[0], self.s_0[1]) if hasattr(self.s_0, &#39;__getitem__&#39;) else self.s_0
+        s_1 = positive_normal(self.s_1[0], self.s_1[1]) if hasattr(self.s_1, &#39;__getitem__&#39;) else self.s_1
+        T = positive_normal(self.T[0], self.T[1]) if hasattr(self.T, &#39;__getitem__&#39;) else self.T
+        a = positive_normal(self.a[0], self.a[1]) if hasattr(self.a, &#39;__getitem__&#39;) else self.a
+        b = positive_normal(self.b[0], self.b[1]) if hasattr(self.b, &#39;__getitem__&#39;) else self.b
+        delta = positive_normal(self.delta[0], self.delta[1]) if hasattr(self.delta, &#39;__getitem__&#39;) else self.delta
+        length = positive_normal(self.length[0], self.length[1]) if hasattr(self.length, &#39;__getitem__&#39;) else self.length
+        thr = positive_normal(self.thr[0], self.thr[1]) if hasattr(self.thr, &#39;__getitem__&#39;) else self.thr
+        pol = positive_normal(self.pol[0], self.pol[1]) if hasattr(self.pol, &#39;__getitem__&#39;) else self.pol
+        fail_p = positive_normal(self.fail_p[0], self.fail_p[1]) if hasattr(self.fail_p, &#39;__getitem__&#39;) else self.fail_p
+        right_bias = positive_normal(self.right_bias[0], self.right_bias[1]) if hasattr(self.right_bias, &#39;__getitem__&#39;) else self.right_bias
+
+        start_v = self.start_v if self.start_v is not None else v_0
+        fail_steps = self.fail_steps
+        spawn_weight = self.spawn_weight
+
+        return Params(v_0=v_0, s_0=s_0, s_1=s_1, T=T, a=a, b=b, delta=delta, length=length,
+                      thr=thr, pol=pol, start_v=start_v, fail_p=fail_p, right_bias=right_bias, fail_steps=fail_steps, spawn_weight=spawn_weight)
+
+class Car:
+    &#34;&#34;&#34;Car game object
+
+    Args:
+        screen: pygame screen
+        road: Road object to later get the car in front
+        startpos: Starting position in screen coords
+    &#34;&#34;&#34;
+
+    def __init__(self, params: Params, road: &#39;Road&#39;, startpos):
+        self.params = params.apply_dist()
+
+        self.pos = startpos
+        self.pos_back = self.pos[0] - self.params.length / 2
+        self.pos_front = self.pos[0] + self.params.length / 2
+
+        self.road = road
+        self.v = self.params.start_v
+
+        self.failing = False
+        self.steps_left = self.params.fail_steps
+
+        # Hidden values to not share state
+        self.__pos = list(startpos)
+        self.__v = self.params.start_v
+        self.__accel = 0.
+
+        self.driver = Driver(params=self.params)
+
+    def __calc_lane_change(self, left, car_front_now, car_front_change, car_back_change):
+        &#34;&#34;&#34;Calculates if a car should change lanes
+
+        Args:
+            left: True if the lane change is to the left lane
+            car_front_now: Car that is currently in front
+            car_back_change: Car that will be in front after the change
+            car_back_change: Car that will be in the back after the change
+
+        Returns: True if the lane change should happen
+        &#34;&#34;&#34;
+
+        s_before = (car_front_now.pos_back - self.pos_front) if car_front_now is not None else 2 * self.road.length # Distance to the car in front
+        other_v_before = car_front_now.v if car_front_now is not None else self.v                                   # Speed of the car in front
+
+        s_after = (car_front_change.pos_back - self.pos_front) if car_front_change is not None else 2 * self.road.length # Same as above but after the change
+        other_v_after = car_front_change.v if car_front_change is not None else self.v
+
+        if car_back_change is None: # If there is no car in front, set both to 0
+            disadvantage = 0
+            accel_behind_after = 0
+        else:
+            s_behind_before = (car_front_change.pos_back - car_back_change.pos_front) if car_front_change is not None else 2 * self.road.length
+            other_v_behind_before = car_front_change.v if car_front_change is not None else car_back_change.v
+
+            s_behind_after = (self.pos_back - car_back_change.pos_front)
+            other_v_behind_after = self.v
+
+            disadvantage, accel_behind_after = car_back_change.driver.disadvantage_and_safety(car_back_change.v, s_behind_before, other_v_behind_before, s_behind_after, other_v_behind_after)
+
+        # Using the MOBIL model
+        change = self.driver.change_lane(left=left, v=self.v, dist_front_before=s_before, vel_front_before=other_v_before, dist_front_after=s_after, vel_front_after=other_v_after, disadvantage_behind_after=disadvantage, accel_behind_after=accel_behind_after)
+
+        # These extra conditions just make sure that cars would not collide if a lane change would to happen
+        safeBack = car_back_change.pos_front &lt; self.pos_back if car_back_change is not None else True
+        safeFront = car_front_change.pos_back &gt; self.pos_front if car_front_change is not None else True
+
+        return change and safeBack and safeFront
+
+    def get_cars_around(self):
+        &#34;&#34;&#34;Get other Cars around this Car
+
+        Returns: Dict with:
+            frontNow: current Car in front of this Car
+            frontLeft: front left Car
+            frontRight: front right Car
+            backLeft: back left Car
+            backRight: back right Car
+        &#34;&#34;&#34;
+
+        car_front_now = None
+        car_front_left = None
+        car_front_right = None
+        car_back_left = None
+        car_back_right = None
+
+        for car in self.road.carlist:
+            if car.pos[0] &gt; self.pos[0] and car.pos[1] == self.pos[1]:
+                car_front_now = car if (car_front_now is None or car.pos[0] &lt; car_front_now.pos[0]) else car_front_now
+            if (self.pos[1] is not self.road.bottomlane and car.pos[0] &gt; self.pos[0] and car.pos[1] == self.pos[1] + self.road.lanewidth):
+                # Front right
+                car_front_right = car if (car_front_right is None or car.pos[0] &lt; car_front_right.pos[0]) else car_front_right
+                pass
+            if (self.pos[1] is not self.road.bottomlane and car.pos[0] &lt; self.pos[0] and car.pos[1] == self.pos[1] + self.road.lanewidth):
+                # Back right
+                car_back_right = car if (car_back_right is None or car.pos[0] &gt; car_back_right.pos[0]) else car_back_right
+            if (self.pos[1] is not self.road.toplane and car.pos[0] &gt; self.pos[0] and car.pos[1] == self.pos[1] - self.road.lanewidth):
+                # Front left
+                car_front_left = car if (car_front_left is None or car.pos[0] &lt; car_front_left.pos[0]) else car_front_left
+            if (self.pos[1] is not self.road.toplane and car.pos[0] &lt; self.pos[0] and car.pos[1] == self.pos[1] - self.road.lanewidth):
+                # Back left
+                car_back_left = car if (car_back_left is None or car.pos[0] &gt; car_back_left.pos[0]) else car_back_left
+            else: continue
+
+        return {&#34;frontNow&#34;: car_front_now, &#34;frontLeft&#34;: car_front_left, &#34;frontRight&#34;: car_front_right, &#34;backLeft&#34;: car_back_left, &#34;backRight&#34;: car_back_right}
+
+    def update_local(self, delta_t: float):
+        &#34;&#34;&#34;
+        Update local state
+        &#34;&#34;&#34;
+
+        # If a car is currently failing or fails now by chance
+        if self.failing or (np.random.random() &lt; self.params.fail_p):
+
+            self.failing = True
+            if self.steps_left &gt; 0:
+                self.steps_left -= 1
+            else:
+                self.steps_left = self.params.fail_steps
+                self.failing = False
+
+        # Get cars around this one to perform calculations based on them
+        cars_around = self.get_cars_around()
+        car_front_now = cars_around[&#34;frontNow&#34;]
+        car_front_left = cars_around[&#34;frontLeft&#34;]
+        car_front_right = cars_around[&#34;frontRight&#34;]
+        car_back_left = cars_around[&#34;backLeft&#34;]
+        car_back_right = cars_around[&#34;backRight&#34;]
+
+        # Before this section of the code is run, the global and local state is the same, so e.g.
+        # v and __v can be used interchangeably on the right hand side of the assignment
+
+        # Change lanes
+        change_left = self.__calc_lane_change(left=True, car_front_now=car_front_now, car_front_change=car_front_left, car_back_change=car_back_left)
+        change_right = self.__calc_lane_change(left=False, car_front_now=car_front_now, car_front_change=car_front_right, car_back_change=car_back_right)
+
+
+        # Update local position
+        self.__pos[0] += (self.v) * delta_t
+
+        # Don&#39;t jump outside of the road :)
+        if change_right and self.pos[1] != self.road.bottomlane:
+            self.__pos[1] += self.road.lanewidth
+        elif change_left and self.pos[1] != self.road.toplane:
+            self.__pos[1] -= self.road.lanewidth
+
+        # Update local speed
+        s = (car_front_now.pos_back - self.pos_front) if car_front_now is not None else 2 * self.road.length
+        s = max(0.000000001, s) # s can&#39;t be 0 or it will break things so we make s smol
+        other_v = car_front_now.v if car_front_now is not None else self.v
+        self.__v = self.v
+        self.__accel = self.driver.get_accel(v=self.v, other_v=other_v, s=s) * delta_t if not self.failing else 0
+        self.__v += self.__accel
+        self.__v = max(self.__v, 0) if not self.failing else 0
+
+    def update_global(self):
+        &#34;&#34;&#34;
+        Update global state
+        &#34;&#34;&#34;
+
+        self.pos = self.__pos.copy()
+        self.pos_back = self.pos[0] - self.driver.params.length / 2
+        self.pos_front = self.pos[0] + self.driver.params.length / 2
+
+        self.v = self.__v
+
+    def serialize(self):
+        &#34;&#34;&#34;Serialize the car
+
+        Returns:
+            Dict with:
+                pos: Position of the car
+                v: Speed of the car
+                accel: Acceleration of the car
+                length: Length of the car
+        &#34;&#34;&#34;
+        return {&#39;pos&#39;: self.pos, &#39;v&#39;: self.v, &#39;accel&#39;: self.__accel, &#39;length&#39;: self.params.length}</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="Traffic Simulation.Car.Car"><code class="flex name class">
+<span>class <span class="ident">Car</span></span>
+<span>(</span><span>params: Traffic Simulation.Car.Params, road: Road, startpos)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Car game object</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>screen</code></strong></dt>
+<dd>pygame screen</dd>
+<dt><strong><code>road</code></strong></dt>
+<dd>Road object to later get the car in front</dd>
+<dt><strong><code>startpos</code></strong></dt>
+<dd>Starting position in screen coords</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Car:
+    &#34;&#34;&#34;Car game object
+
+    Args:
+        screen: pygame screen
+        road: Road object to later get the car in front
+        startpos: Starting position in screen coords
+    &#34;&#34;&#34;
+
+    def __init__(self, params: Params, road: &#39;Road&#39;, startpos):
+        self.params = params.apply_dist()
+
+        self.pos = startpos
+        self.pos_back = self.pos[0] - self.params.length / 2
+        self.pos_front = self.pos[0] + self.params.length / 2
+
+        self.road = road
+        self.v = self.params.start_v
+
+        self.failing = False
+        self.steps_left = self.params.fail_steps
+
+        # Hidden values to not share state
+        self.__pos = list(startpos)
+        self.__v = self.params.start_v
+        self.__accel = 0.
+
+        self.driver = Driver(params=self.params)
+
+    def __calc_lane_change(self, left, car_front_now, car_front_change, car_back_change):
+        &#34;&#34;&#34;Calculates if a car should change lanes
+
+        Args:
+            left: True if the lane change is to the left lane
+            car_front_now: Car that is currently in front
+            car_back_change: Car that will be in front after the change
+            car_back_change: Car that will be in the back after the change
+
+        Returns: True if the lane change should happen
+        &#34;&#34;&#34;
+
+        s_before = (car_front_now.pos_back - self.pos_front) if car_front_now is not None else 2 * self.road.length # Distance to the car in front
+        other_v_before = car_front_now.v if car_front_now is not None else self.v                                   # Speed of the car in front
+
+        s_after = (car_front_change.pos_back - self.pos_front) if car_front_change is not None else 2 * self.road.length # Same as above but after the change
+        other_v_after = car_front_change.v if car_front_change is not None else self.v
+
+        if car_back_change is None: # If there is no car in front, set both to 0
+            disadvantage = 0
+            accel_behind_after = 0
+        else:
+            s_behind_before = (car_front_change.pos_back - car_back_change.pos_front) if car_front_change is not None else 2 * self.road.length
+            other_v_behind_before = car_front_change.v if car_front_change is not None else car_back_change.v
+
+            s_behind_after = (self.pos_back - car_back_change.pos_front)
+            other_v_behind_after = self.v
+
+            disadvantage, accel_behind_after = car_back_change.driver.disadvantage_and_safety(car_back_change.v, s_behind_before, other_v_behind_before, s_behind_after, other_v_behind_after)
+
+        # Using the MOBIL model
+        change = self.driver.change_lane(left=left, v=self.v, dist_front_before=s_before, vel_front_before=other_v_before, dist_front_after=s_after, vel_front_after=other_v_after, disadvantage_behind_after=disadvantage, accel_behind_after=accel_behind_after)
+
+        # These extra conditions just make sure that cars would not collide if a lane change would to happen
+        safeBack = car_back_change.pos_front &lt; self.pos_back if car_back_change is not None else True
+        safeFront = car_front_change.pos_back &gt; self.pos_front if car_front_change is not None else True
+
+        return change and safeBack and safeFront
+
+    def get_cars_around(self):
+        &#34;&#34;&#34;Get other Cars around this Car
+
+        Returns: Dict with:
+            frontNow: current Car in front of this Car
+            frontLeft: front left Car
+            frontRight: front right Car
+            backLeft: back left Car
+            backRight: back right Car
+        &#34;&#34;&#34;
+
+        car_front_now = None
+        car_front_left = None
+        car_front_right = None
+        car_back_left = None
+        car_back_right = None
+
+        for car in self.road.carlist:
+            if car.pos[0] &gt; self.pos[0] and car.pos[1] == self.pos[1]:
+                car_front_now = car if (car_front_now is None or car.pos[0] &lt; car_front_now.pos[0]) else car_front_now
+            if (self.pos[1] is not self.road.bottomlane and car.pos[0] &gt; self.pos[0] and car.pos[1] == self.pos[1] + self.road.lanewidth):
+                # Front right
+                car_front_right = car if (car_front_right is None or car.pos[0] &lt; car_front_right.pos[0]) else car_front_right
+                pass
+            if (self.pos[1] is not self.road.bottomlane and car.pos[0] &lt; self.pos[0] and car.pos[1] == self.pos[1] + self.road.lanewidth):
+                # Back right
+                car_back_right = car if (car_back_right is None or car.pos[0] &gt; car_back_right.pos[0]) else car_back_right
+            if (self.pos[1] is not self.road.toplane and car.pos[0] &gt; self.pos[0] and car.pos[1] == self.pos[1] - self.road.lanewidth):
+                # Front left
+                car_front_left = car if (car_front_left is None or car.pos[0] &lt; car_front_left.pos[0]) else car_front_left
+            if (self.pos[1] is not self.road.toplane and car.pos[0] &lt; self.pos[0] and car.pos[1] == self.pos[1] - self.road.lanewidth):
+                # Back left
+                car_back_left = car if (car_back_left is None or car.pos[0] &gt; car_back_left.pos[0]) else car_back_left
+            else: continue
+
+        return {&#34;frontNow&#34;: car_front_now, &#34;frontLeft&#34;: car_front_left, &#34;frontRight&#34;: car_front_right, &#34;backLeft&#34;: car_back_left, &#34;backRight&#34;: car_back_right}
+
+    def update_local(self, delta_t: float):
+        &#34;&#34;&#34;
+        Update local state
+        &#34;&#34;&#34;
+
+        # If a car is currently failing or fails now by chance
+        if self.failing or (np.random.random() &lt; self.params.fail_p):
+
+            self.failing = True
+            if self.steps_left &gt; 0:
+                self.steps_left -= 1
+            else:
+                self.steps_left = self.params.fail_steps
+                self.failing = False
+
+        # Get cars around this one to perform calculations based on them
+        cars_around = self.get_cars_around()
+        car_front_now = cars_around[&#34;frontNow&#34;]
+        car_front_left = cars_around[&#34;frontLeft&#34;]
+        car_front_right = cars_around[&#34;frontRight&#34;]
+        car_back_left = cars_around[&#34;backLeft&#34;]
+        car_back_right = cars_around[&#34;backRight&#34;]
+
+        # Before this section of the code is run, the global and local state is the same, so e.g.
+        # v and __v can be used interchangeably on the right hand side of the assignment
+
+        # Change lanes
+        change_left = self.__calc_lane_change(left=True, car_front_now=car_front_now, car_front_change=car_front_left, car_back_change=car_back_left)
+        change_right = self.__calc_lane_change(left=False, car_front_now=car_front_now, car_front_change=car_front_right, car_back_change=car_back_right)
+
+
+        # Update local position
+        self.__pos[0] += (self.v) * delta_t
+
+        # Don&#39;t jump outside of the road :)
+        if change_right and self.pos[1] != self.road.bottomlane:
+            self.__pos[1] += self.road.lanewidth
+        elif change_left and self.pos[1] != self.road.toplane:
+            self.__pos[1] -= self.road.lanewidth
+
+        # Update local speed
+        s = (car_front_now.pos_back - self.pos_front) if car_front_now is not None else 2 * self.road.length
+        s = max(0.000000001, s) # s can&#39;t be 0 or it will break things so we make s smol
+        other_v = car_front_now.v if car_front_now is not None else self.v
+        self.__v = self.v
+        self.__accel = self.driver.get_accel(v=self.v, other_v=other_v, s=s) * delta_t if not self.failing else 0
+        self.__v += self.__accel
+        self.__v = max(self.__v, 0) if not self.failing else 0
+
+    def update_global(self):
+        &#34;&#34;&#34;
+        Update global state
+        &#34;&#34;&#34;
+
+        self.pos = self.__pos.copy()
+        self.pos_back = self.pos[0] - self.driver.params.length / 2
+        self.pos_front = self.pos[0] + self.driver.params.length / 2
+
+        self.v = self.__v
+
+    def serialize(self):
+        &#34;&#34;&#34;Serialize the car
+
+        Returns:
+            Dict with:
+                pos: Position of the car
+                v: Speed of the car
+                accel: Acceleration of the car
+                length: Length of the car
+        &#34;&#34;&#34;
+        return {&#39;pos&#39;: self.pos, &#39;v&#39;: self.v, &#39;accel&#39;: self.__accel, &#39;length&#39;: self.params.length}</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="Traffic Simulation.Car.Car.get_cars_around"><code class="name flex">
+<span>def <span class="ident">get_cars_around</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get other Cars around this Car</p>
+<p>Returns: Dict with:
+frontNow: current Car in front of this Car
+frontLeft: front left Car
+frontRight: front right Car
+backLeft: back left Car
+backRight: back right Car</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_cars_around(self):
+    &#34;&#34;&#34;Get other Cars around this Car
+
+    Returns: Dict with:
+        frontNow: current Car in front of this Car
+        frontLeft: front left Car
+        frontRight: front right Car
+        backLeft: back left Car
+        backRight: back right Car
+    &#34;&#34;&#34;
+
+    car_front_now = None
+    car_front_left = None
+    car_front_right = None
+    car_back_left = None
+    car_back_right = None
+
+    for car in self.road.carlist:
+        if car.pos[0] &gt; self.pos[0] and car.pos[1] == self.pos[1]:
+            car_front_now = car if (car_front_now is None or car.pos[0] &lt; car_front_now.pos[0]) else car_front_now
+        if (self.pos[1] is not self.road.bottomlane and car.pos[0] &gt; self.pos[0] and car.pos[1] == self.pos[1] + self.road.lanewidth):
+            # Front right
+            car_front_right = car if (car_front_right is None or car.pos[0] &lt; car_front_right.pos[0]) else car_front_right
+            pass
+        if (self.pos[1] is not self.road.bottomlane and car.pos[0] &lt; self.pos[0] and car.pos[1] == self.pos[1] + self.road.lanewidth):
+            # Back right
+            car_back_right = car if (car_back_right is None or car.pos[0] &gt; car_back_right.pos[0]) else car_back_right
+        if (self.pos[1] is not self.road.toplane and car.pos[0] &gt; self.pos[0] and car.pos[1] == self.pos[1] - self.road.lanewidth):
+            # Front left
+            car_front_left = car if (car_front_left is None or car.pos[0] &lt; car_front_left.pos[0]) else car_front_left
+        if (self.pos[1] is not self.road.toplane and car.pos[0] &lt; self.pos[0] and car.pos[1] == self.pos[1] - self.road.lanewidth):
+            # Back left
+            car_back_left = car if (car_back_left is None or car.pos[0] &gt; car_back_left.pos[0]) else car_back_left
+        else: continue
+
+    return {&#34;frontNow&#34;: car_front_now, &#34;frontLeft&#34;: car_front_left, &#34;frontRight&#34;: car_front_right, &#34;backLeft&#34;: car_back_left, &#34;backRight&#34;: car_back_right}</code></pre>
+</details>
+</dd>
+<dt id="Traffic Simulation.Car.Car.serialize"><code class="name flex">
+<span>def <span class="ident">serialize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Serialize the car</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt>Dict with:</dt>
+<dt><code>
+pos</code></dt>
+<dd>Position of the car
+v: Speed of the car
+accel: Acceleration of the car
+length: Length of the car</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def serialize(self):
+    &#34;&#34;&#34;Serialize the car
+
+    Returns:
+        Dict with:
+            pos: Position of the car
+            v: Speed of the car
+            accel: Acceleration of the car
+            length: Length of the car
+    &#34;&#34;&#34;
+    return {&#39;pos&#39;: self.pos, &#39;v&#39;: self.v, &#39;accel&#39;: self.__accel, &#39;length&#39;: self.params.length}</code></pre>
+</details>
+</dd>
+<dt id="Traffic Simulation.Car.Car.update_global"><code class="name flex">
+<span>def <span class="ident">update_global</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Update global state</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_global(self):
+    &#34;&#34;&#34;
+    Update global state
+    &#34;&#34;&#34;
+
+    self.pos = self.__pos.copy()
+    self.pos_back = self.pos[0] - self.driver.params.length / 2
+    self.pos_front = self.pos[0] + self.driver.params.length / 2
+
+    self.v = self.__v</code></pre>
+</details>
+</dd>
+<dt id="Traffic Simulation.Car.Car.update_local"><code class="name flex">
+<span>def <span class="ident">update_local</span></span>(<span>self, delta_t: float)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Update local state</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_local(self, delta_t: float):
+    &#34;&#34;&#34;
+    Update local state
+    &#34;&#34;&#34;
+
+    # If a car is currently failing or fails now by chance
+    if self.failing or (np.random.random() &lt; self.params.fail_p):
+
+        self.failing = True
+        if self.steps_left &gt; 0:
+            self.steps_left -= 1
+        else:
+            self.steps_left = self.params.fail_steps
+            self.failing = False
+
+    # Get cars around this one to perform calculations based on them
+    cars_around = self.get_cars_around()
+    car_front_now = cars_around[&#34;frontNow&#34;]
+    car_front_left = cars_around[&#34;frontLeft&#34;]
+    car_front_right = cars_around[&#34;frontRight&#34;]
+    car_back_left = cars_around[&#34;backLeft&#34;]
+    car_back_right = cars_around[&#34;backRight&#34;]
+
+    # Before this section of the code is run, the global and local state is the same, so e.g.
+    # v and __v can be used interchangeably on the right hand side of the assignment
+
+    # Change lanes
+    change_left = self.__calc_lane_change(left=True, car_front_now=car_front_now, car_front_change=car_front_left, car_back_change=car_back_left)
+    change_right = self.__calc_lane_change(left=False, car_front_now=car_front_now, car_front_change=car_front_right, car_back_change=car_back_right)
+
+
+    # Update local position
+    self.__pos[0] += (self.v) * delta_t
+
+    # Don&#39;t jump outside of the road :)
+    if change_right and self.pos[1] != self.road.bottomlane:
+        self.__pos[1] += self.road.lanewidth
+    elif change_left and self.pos[1] != self.road.toplane:
+        self.__pos[1] -= self.road.lanewidth
+
+    # Update local speed
+    s = (car_front_now.pos_back - self.pos_front) if car_front_now is not None else 2 * self.road.length
+    s = max(0.000000001, s) # s can&#39;t be 0 or it will break things so we make s smol
+    other_v = car_front_now.v if car_front_now is not None else self.v
+    self.__v = self.v
+    self.__accel = self.driver.get_accel(v=self.v, other_v=other_v, s=s) * delta_t if not self.failing else 0
+    self.__v += self.__accel
+    self.__v = max(self.__v, 0) if not self.failing else 0</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="Traffic Simulation.Car.Params"><code class="flex name class">
+<span>class <span class="ident">Params</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class to store the Car parameters, including IDM parameters</p>
+<h2 id="kwargs">Kwargs</h2>
+<p>If arg is passed as tuple, then first value is the average and second is the standard deviation (with cuttof at 2 sigma)</p>
+<p>v_0: Desired velocity
+s_0: Jam distance
+s_1: Jam Distance
+T: Safe time headway
+a: Maximum acceleration
+b: Desierd acceleration
+delta: Acceleration exponent
+length: Vehicle length
+thr: threshold for lane change
+pol: politeness &lt;1
+fail_p: Probability of failure per step
+right_bias: Bias to switch to the right lane
+start_v: Starging speed when spawned
+fail_steps: Steps the car will be stationary
+spawn_weight: Defines the weighted probability that this car will spawn</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Params:
+    &#34;&#34;&#34;Class to store the Car parameters, including IDM parameters
+
+    Kwargs:
+        If arg is passed as tuple, then first value is the average and second is the standard deviation (with cuttof at 2 sigma)
+
+        v_0: Desired velocity
+        s_0: Jam distance
+        s_1: Jam Distance
+        T: Safe time headway
+        a: Maximum acceleration
+        b: Desierd acceleration
+        delta: Acceleration exponent
+        length: Vehicle length
+        thr: threshold for lane change
+        pol: politeness &lt;1
+        fail_p: Probability of failure per step
+        right_bias: Bias to switch to the right lane
+        start_v: Starging speed when spawned
+        fail_steps: Steps the car will be stationary
+        spawn_weight: Defines the weighted probability that this car will spawn
+    &#34;&#34;&#34;
+
+    def __init__(self, **kwargs):
+        self.v_0 = kwargs.pop(&#39;v_0&#39;, (30, 1))
+        self.s_0 = kwargs.pop(&#39;s_0&#39;, (2, 1))
+        self.s_1 = kwargs.pop(&#39;s_1&#39;, 0)
+        self.T = kwargs.pop(&#39;T&#39;, (1.5, 1))
+        self.a = kwargs.pop(&#39;a&#39;, (2, 1))
+        self.b = kwargs.pop(&#39;b&#39;, (3, 1))
+        self.delta = kwargs.pop(&#39;delta&#39;, 4)
+        self.length = kwargs.pop(&#39;length&#39;, (5, 1))
+        self.thr = kwargs.pop(&#39;thr&#39;, 0.2)
+        self.pol = kwargs.pop(&#39;pol&#39;, (0.5, 1))
+        self.fail_p = kwargs.pop(&#39;fail_p&#39;, 0)
+        self.right_bias = kwargs.pop(&#39;right_bias&#39;, 0.3)
+
+        # Distribution never applied to these params
+        self.start_v = kwargs.pop(&#39;start_v&#39;, None)
+        self.fail_steps = kwargs.pop(&#39;fail_steps&#39;, 1)
+        self.spawn_weight = kwargs.pop(&#39;spawn_weight&#39;, 10)
+
+        if len(kwargs) &gt; 0:
+            for arg in kwargs.keys(): warnings.warn(&#34;Unexpected kwarg &#34; + arg)
+
+    def apply_dist(self):
+        &#34;&#34;&#34;Applies the distribution and returns a Params object with fixed values
+        &#34;&#34;&#34;
+        
+        # Make sure we get no negative values and that we cut off at 2 sigma (then the average will be chosen)
+        def positive_normal(avg, dev):
+            a = abs(np.random.normal(avg, dev))
+            return a if avg-2*dev &lt;= a &lt;= avg+2*dev else avg
+
+        v_0 = positive_normal(self.v_0[0], self.v_0[1]) if hasattr(self.v_0, &#39;__getitem__&#39;) else self.v_0
+        s_0 = positive_normal(self.s_0[0], self.s_0[1]) if hasattr(self.s_0, &#39;__getitem__&#39;) else self.s_0
+        s_1 = positive_normal(self.s_1[0], self.s_1[1]) if hasattr(self.s_1, &#39;__getitem__&#39;) else self.s_1
+        T = positive_normal(self.T[0], self.T[1]) if hasattr(self.T, &#39;__getitem__&#39;) else self.T
+        a = positive_normal(self.a[0], self.a[1]) if hasattr(self.a, &#39;__getitem__&#39;) else self.a
+        b = positive_normal(self.b[0], self.b[1]) if hasattr(self.b, &#39;__getitem__&#39;) else self.b
+        delta = positive_normal(self.delta[0], self.delta[1]) if hasattr(self.delta, &#39;__getitem__&#39;) else self.delta
+        length = positive_normal(self.length[0], self.length[1]) if hasattr(self.length, &#39;__getitem__&#39;) else self.length
+        thr = positive_normal(self.thr[0], self.thr[1]) if hasattr(self.thr, &#39;__getitem__&#39;) else self.thr
+        pol = positive_normal(self.pol[0], self.pol[1]) if hasattr(self.pol, &#39;__getitem__&#39;) else self.pol
+        fail_p = positive_normal(self.fail_p[0], self.fail_p[1]) if hasattr(self.fail_p, &#39;__getitem__&#39;) else self.fail_p
+        right_bias = positive_normal(self.right_bias[0], self.right_bias[1]) if hasattr(self.right_bias, &#39;__getitem__&#39;) else self.right_bias
+
+        start_v = self.start_v if self.start_v is not None else v_0
+        fail_steps = self.fail_steps
+        spawn_weight = self.spawn_weight
+
+        return Params(v_0=v_0, s_0=s_0, s_1=s_1, T=T, a=a, b=b, delta=delta, length=length,
+                      thr=thr, pol=pol, start_v=start_v, fail_p=fail_p, right_bias=right_bias, fail_steps=fail_steps, spawn_weight=spawn_weight)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="Traffic Simulation.Car.Params.apply_dist"><code class="name flex">
+<span>def <span class="ident">apply_dist</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Applies the distribution and returns a Params object with fixed values</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_dist(self):
+    &#34;&#34;&#34;Applies the distribution and returns a Params object with fixed values
+    &#34;&#34;&#34;
+    
+    # Make sure we get no negative values and that we cut off at 2 sigma (then the average will be chosen)
+    def positive_normal(avg, dev):
+        a = abs(np.random.normal(avg, dev))
+        return a if avg-2*dev &lt;= a &lt;= avg+2*dev else avg
+
+    v_0 = positive_normal(self.v_0[0], self.v_0[1]) if hasattr(self.v_0, &#39;__getitem__&#39;) else self.v_0
+    s_0 = positive_normal(self.s_0[0], self.s_0[1]) if hasattr(self.s_0, &#39;__getitem__&#39;) else self.s_0
+    s_1 = positive_normal(self.s_1[0], self.s_1[1]) if hasattr(self.s_1, &#39;__getitem__&#39;) else self.s_1
+    T = positive_normal(self.T[0], self.T[1]) if hasattr(self.T, &#39;__getitem__&#39;) else self.T
+    a = positive_normal(self.a[0], self.a[1]) if hasattr(self.a, &#39;__getitem__&#39;) else self.a
+    b = positive_normal(self.b[0], self.b[1]) if hasattr(self.b, &#39;__getitem__&#39;) else self.b
+    delta = positive_normal(self.delta[0], self.delta[1]) if hasattr(self.delta, &#39;__getitem__&#39;) else self.delta
+    length = positive_normal(self.length[0], self.length[1]) if hasattr(self.length, &#39;__getitem__&#39;) else self.length
+    thr = positive_normal(self.thr[0], self.thr[1]) if hasattr(self.thr, &#39;__getitem__&#39;) else self.thr
+    pol = positive_normal(self.pol[0], self.pol[1]) if hasattr(self.pol, &#39;__getitem__&#39;) else self.pol
+    fail_p = positive_normal(self.fail_p[0], self.fail_p[1]) if hasattr(self.fail_p, &#39;__getitem__&#39;) else self.fail_p
+    right_bias = positive_normal(self.right_bias[0], self.right_bias[1]) if hasattr(self.right_bias, &#39;__getitem__&#39;) else self.right_bias
+
+    start_v = self.start_v if self.start_v is not None else v_0
+    fail_steps = self.fail_steps
+    spawn_weight = self.spawn_weight
+
+    return Params(v_0=v_0, s_0=s_0, s_1=s_1, T=T, a=a, b=b, delta=delta, length=length,
+                  thr=thr, pol=pol, start_v=start_v, fail_p=fail_p, right_bias=right_bias, fail_steps=fail_steps, spawn_weight=spawn_weight)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="Traffic Simulation" href="index.html">Traffic Simulation</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="Traffic Simulation.Car.Car" href="#Traffic Simulation.Car.Car">Car</a></code></h4>
+<ul class="">
+<li><code><a title="Traffic Simulation.Car.Car.get_cars_around" href="#Traffic Simulation.Car.Car.get_cars_around">get_cars_around</a></code></li>
+<li><code><a title="Traffic Simulation.Car.Car.serialize" href="#Traffic Simulation.Car.Car.serialize">serialize</a></code></li>
+<li><code><a title="Traffic Simulation.Car.Car.update_global" href="#Traffic Simulation.Car.Car.update_global">update_global</a></code></li>
+<li><code><a title="Traffic Simulation.Car.Car.update_local" href="#Traffic Simulation.Car.Car.update_local">update_local</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="Traffic Simulation.Car.Params" href="#Traffic Simulation.Car.Params">Params</a></code></h4>
+<ul class="">
+<li><code><a title="Traffic Simulation.Car.Params.apply_dist" href="#Traffic Simulation.Car.Params.apply_dist">apply_dist</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
