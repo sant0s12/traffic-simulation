@@ -11,19 +11,24 @@ WHITE = (255, 255, 255)
 class Params:
     """Class to store the Car parameters, including IDM parameters
 
-    Args:
-        If arg is passed as tuple, then first value is the average and second is the standard deviation
+    Kwargs:
+        If arg is passed as tuple, then first value is the average and second is the standard deviation (with cuttof at 2 sigma)
 
         v_0: Desired velocity
+        s_0: Jam distance
+        s_1: Jam Distance
         T: Safe time headway
         a: Maximum acceleration
         b: Desierd acceleration
         delta: Acceleration exponent
-        s_0: Jam distance
-        s_1: Jam Distance
-        l: Vehicle length (l=1/p_max)
+        length: Vehicle length
         thr: threshold for lane change
-        p: politeness <1
+        pol: politeness <1
+        fail_p: Probability of failure per step
+        right_bias: Bias to switch to the right lane
+        start_v: Starging speed when spawned
+        fail_steps: Steps the car will be stationary
+        spawn_weight: Defines the weighted probability that this car will spawn
     """
 
     def __init__(self, **kwargs):
@@ -52,6 +57,7 @@ class Params:
         """Applies the distribution and returns a Params object with fixed values
         """
         
+        # Make sure we get no negative values and that we cut off at 2 sigma (then the average will be chosen)
         def positive_normal(avg, dev):
             a = abs(np.random.normal(avg, dev))
             return a if avg-2*dev <= a <= avg+2*dev else avg
@@ -81,9 +87,8 @@ class Car:
 
     Args:
         screen: pygame screen
-        road: road object to later get the car in front
-        startpos: starting position in screen coords
-        start_v: initial speed when spawned
+        road: Road object to later get the car in front
+        startpos: Starting position in screen coords
     """
 
     def __init__(self, params: Params, road: 'Road', startpos):
@@ -107,14 +112,24 @@ class Car:
         self.driver = Driver(params=self.params)
 
     def __calc_lane_change(self, left, car_front_now, car_front_change, car_back_change):
+        """Calculates if a car should change lanes
+
+        Args:
+            left: True if the lane change is to the left lane
+            car_front_now: Car that is currently in front
+            car_back_change: Car that will be in front after the change
+            car_back_change: Car that will be in the back after the change
+
+        Returns: True if the lane change should happen
+        """
+
         s_before = (car_front_now.pos_back - self.pos_front) if car_front_now is not None else 2 * self.road.length # Distance to the car in front
         other_v_before = car_front_now.v if car_front_now is not None else self.v                                   # Speed of the car in front
 
         s_after = (car_front_change.pos_back - self.pos_front) if car_front_change is not None else 2 * self.road.length # Same as above but after the change
         other_v_after = car_front_change.v if car_front_change is not None else self.v
 
-        if car_back_change is None:
-
+        if car_back_change is None: # If there is no car in front, set both to 0
             disadvantage = 0
             accel_behind_after = 0
         else:
@@ -126,8 +141,10 @@ class Car:
 
             disadvantage, accel_behind_after = car_back_change.driver.disadvantage_and_safety(car_back_change.v, s_behind_before, other_v_behind_before, s_behind_after, other_v_behind_after)
 
+        # Using the MOBIL model
         change = self.driver.change_lane(left=left, v=self.v, dist_front_before=s_before, vel_front_before=other_v_before, dist_front_after=s_after, vel_front_after=other_v_after, disadvantage_behind_after=disadvantage, accel_behind_after=accel_behind_after)
 
+        # These extra conditions just make sure that cars would not collide if a lane change would to happen
         safeBack = car_back_change.pos_front < self.pos_back if car_back_change is not None else True
         safeFront = car_front_change.pos_back > self.pos_front if car_front_change is not None else True
 
@@ -175,6 +192,7 @@ class Car:
         Update local state
         """
 
+        # If a car is currently failing or fails now by chance
         if self.failing or (np.random.random() < self.params.fail_p):
 
             self.failing = True
@@ -184,6 +202,7 @@ class Car:
                 self.steps_left = self.params.fail_steps
                 self.failing = False
 
+        # Get cars around this one to perform calculations based on them
         cars_around = self.get_cars_around()
         car_front_now = cars_around["frontNow"]
         car_front_left = cars_around["frontLeft"]
@@ -202,6 +221,7 @@ class Car:
         # Update local position
         self.__pos[0] += (self.v) * delta_t
 
+        # Don't jump outside of the road :)
         if change_right and self.pos[1] != self.road.bottomlane:
             self.__pos[1] += self.road.lanewidth
         elif change_left and self.pos[1] != self.road.toplane:
@@ -209,7 +229,7 @@ class Car:
 
         # Update local speed
         s = (car_front_now.pos_back - self.pos_front) if car_front_now is not None else 2 * self.road.length
-        s = max(0.000000001, s)
+        s = max(0.000000001, s) # s can't be 0 or it will break things so we make s smol
         other_v = car_front_now.v if car_front_now is not None else self.v
         self.__v = self.v
         self.__accel = self.driver.get_accel(v=self.v, other_v=other_v, s=s) * delta_t if not self.failing else 0
@@ -230,10 +250,11 @@ class Car:
     def serialize(self):
         """Serialize the car
 
-        Returns: Dict with:
-        pos: position of the car
-        accel: current acceleration
-        rect: pygame rect (for displaying it later)
-        surface: pygame surface (for displaying it later)
+        Returns:
+            Dict with:
+                pos: Position of the car
+                v: Speed of the car
+                accel: Acceleration of the car
+                length: Length of the car
         """
         return {'pos': self.pos, 'v': self.v, 'accel': self.__accel, 'length': self.params.length}

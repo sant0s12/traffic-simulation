@@ -1,13 +1,12 @@
 import math
 
 class Driver:
-    """Driver Class to following the Intelligent Driver Model
+    """Driver Class to following the Intelligent Driver and MOBIL Models
 
-    This class models our divers in the simulation using the provided formulas int the paper.
+    This class models the divers in the simulation using the formulas that were provided in the respective papers.
 
     Args:
-        v: Starting velocity
-        params: car parameters
+        params: Car parameters
     """
 
     def __init__(self, params):
@@ -22,6 +21,9 @@ class Driver:
         return s_star
 
     def get_accel(self, v, other_v, s):
+        """Calculates the acceleration of the car based on it's parameters and the surrounding cars
+        """
+
         delta_v = v - other_v
         s_star = Driver.__s_star(params=self.params, v=v, delta_v=delta_v)
         accel = (self.params.a * (1 - math.pow(v/self.params.v_0, self.params.delta) - math.pow(s_star/s, 2)))
@@ -29,11 +31,17 @@ class Driver:
         return accel
 
     def disadvantage_and_safety(self, v:float, dist_other_before: float, vel_other_before:float, dist_other_after:float, vel_other_after: float):
+        """Calculates intermediate values to check if a lane change is safe
+        """
+
         accel_after = self.get_accel(v, vel_other_after, dist_other_after)
         accel_before = self.get_accel(v, vel_other_before, dist_other_before)
         return (accel_before - accel_after, accel_after)
 
     def change_lane(self, left: bool, v: float, dist_front_before: float, vel_front_before:float, dist_front_after:float, vel_front_after: float, disadvantage_behind_after:float, accel_behind_after:float):
+        """Calculates if a lane change should happen based on the MOBIL model
+        """
+
         delta = self.params.right_bias if left else -self.params.right_bias
         accel_after = self.get_accel(v, vel_front_after, dist_front_after)
         accel_before = self.get_accel(v, vel_front_before, dist_front_before)
