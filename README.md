@@ -12,7 +12,7 @@ While many (European) countries have a general speed limit in place, Germany is 
 ## The Model
 
 We model a straight two-lane highway, where cars enter from the left and exit to the right. To determine the acceleration of each car at a given time step, we use the Intelligent Driver Model (IDM) [1, 3]. Since we are modeling a two-lane highway, we also need to model lane-changing behaviour. This is achieved by utilizing the lane-changing model MOBIL [2, 4].  
-To analyse the results of our simulation, we define our independent variables as time, the speedlimit, the deviation from the speedlimit/average speed and the probability of disturbances, and our dependent variables as the location of cars and their associated velocity/acceleration at a given time step. The dependent variables can easily be measured by storing the corresponding parameters at every time step in a file.  
+To analyse the results of our simulation, we define our independent variables as time, the speed limit, the deviation from the speed limit/average speed and the probability of disturbances. Our dependent variables are the location of cars and their associated velocity/acceleration at a given time step. The dependent variables can easily be measured by storing the corresponding parameters at every time step in a file.  
 
 
 ## Fundamental Questions
