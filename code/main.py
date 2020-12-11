@@ -49,7 +49,7 @@ def dots_to_image_not_saved(pixel_plot):
 
     return Image.fromarray(pixel_plot.astype('uint8'), mode='RGB')
 
-# Combine two images and saves them
+# Combine two images and save them
 def combine_and_save(img1, img2, filename, overwrite = False):
     from PIL import Image
     filename = (make_filename(filename) if not overwrite else filename)
