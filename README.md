@@ -40,6 +40,6 @@ We expect that a general speed limit decreases traffic congestion and thus incre
 
 ## Research Methods
 
-Agent-Based Continous modelling
+Agent-Based Continous modelling.
 
 ## Other
