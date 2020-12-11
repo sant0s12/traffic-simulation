@@ -82,7 +82,3 @@ class Road:
             self.last_new_car_t = 0
 
         return car_reached_end
-
-    def draw(self, screen):
-        for car in self.carlist:
-            car.draw(screen)
