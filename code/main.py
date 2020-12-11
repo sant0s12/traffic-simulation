@@ -137,7 +137,7 @@ if __name__ == "__main__":
             dots = Metrics.make_dots_bw(data, road_length, time_div=1, delta_x=10)
             dots_to_image(dots, filename_graph, overwrite=True)
 
-        plt.bar(range(len(limits), avg_table[i]))
+        plt.bar(range(len(limits)), avg_table[i])
         plt.xticks(range(len(limits)), limits)
         plt.ylabel("Average speed")
         plt.xlabel("Speed limit")
@@ -162,18 +162,18 @@ if __name__ == "__main__":
     avgs = [100, 120, 140, 160, 180]
     widths = [10, 15, 20]
     fail_ps = [0, 1e-6]
-    avg_table = np.zeros((len(fail_ps), len(avgs)))
+    avg_table = np.zeros((len(widths), len(avgs)))
 
-    for i, p in enumerate(fail_ps):
-        folder='no_speedlimit/{p}/'
-        filename_graph_groupped=folder + f'no_speedlimit_graph_groupped.svg'
-        for i, a in enumerate(avgs):
-            filename_plot=folder + f'speedlimit_plot_fail_{p}.svg'
-            for w in widths:
+    for p in fail_ps:
+        folder=f'no_speedlimit/{p}/'
+        filename_plot_groupped=folder + f'no_speedlimit_graph_groupped.svg'
+        for i, w in enumerate(widths):
+            filename_plot=folder + f'no_speedlimit_plot_width_{w}.svg'
+            for j, a in enumerate(avgs):
                 filename_data=folder + f'no_speedlimit_({a}, {w})_fail_{p}.json'
                 filename_average=folder + f'no_speedlimit_({a}, {w})_fail_{p}_average.json'
                 filename_graph=folder + f'no_speedlimit_({a}, {w})_fail_{p}.png'
-                filename_average_plot=folder + f'speedlimit_{l}_fail_{p}_average_plot.svg'
+                filename_average_plot=folder + f'no_speedlimit_{a}_width_{w}_average_plot.svg'
 
                 data = read_data(filename=filename_data)
                 if data is None:
@@ -200,13 +200,12 @@ if __name__ == "__main__":
                 dots = Metrics.make_dots_bw(data, road_length, time_div=1, delta_x=10)
                 dots_to_image(dots, filename_graph, overwrite=True)
 
-
-            plt.bar(range(len(avgs), avg_table[i]))
+            plt.bar(range(len(avgs)), avg_table[i])
             plt.xticks(range(len(avgs)), avgs)
             plt.ylabel("Average speed")
-            plt.xlabel("Speed limit")
+            plt.xlabel("Average desired speed")
             plt.savefig(filename_plot)
             plt.close()
 
-        Metrics.plot_bar_groupped(avg_table, filename_graph_groupped, fail_ps, xticks=avgs, ylabel="Average speed", xlabel="Desired speed")
+        Metrics.plot_bar_groupped(avg_table, filename_plot_groupped, widths, xticks=avgs, ylabel="Average speed", xlabel="Desired speed")
     #===========================================================================================
