@@ -91,6 +91,17 @@ class Metrics:
 
         return pixel_plot
 
+    def plot_bins(bins, data, filename):
+        import matplotlib.pyplot as plt
+        plot_data = np.array(data)
+        plot_data = np.resize(plot_data, int(np.floor(plot_data.size/bins) * bins))
+        plot_data = plot_data.reshape(-1, int(plot_data.size/bins))
+        plot_data = np.mean(plot_data, axis=1)
+        plt.bar(range(bins), plot_data)
+        plt.ylim(0, 160)
+        plt.savefig(filename)
+        plt.close()
+
     def show_dots(pixel_plot):
         import matplotlib.pyplot as plt
         plt.imshow(pixel_plot, cmap='gray')

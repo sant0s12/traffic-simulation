@@ -107,6 +107,7 @@ if __name__ == "__main__":
             filename_data=folder + f'speedlimit_{l}_fail_{p}.json'
             filename_average=folder + f'speedlimit_{l}_fail_{p}_average.json'
             filename_graph=folder + f'speedlimit_{l}_fail_{p}_graph.png'
+            filename_average_plot=folder + f'speedlimit_{l}_fail_{p}_average_plot.svg'
             data = read_data(filename=filename_data)
             if data is None:
                 print(f'Running simulation for speedlimit={l}, fail_p={p}')
@@ -123,6 +124,8 @@ if __name__ == "__main__":
 
             avg = Metrics.avg_speed(data)
             save_data(avg, filename_average, overwrite=True)
+
+            Metrics.plot_bins(100, avg, filename_average_plot)
 
             dots = Metrics.make_dots_bw(data, road_length, time_div=1, delta_x=10)
             dots_to_image(dots, filename_graph, overwrite=True)
