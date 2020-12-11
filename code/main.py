@@ -86,30 +86,45 @@ if __name__ == "__main__":
     road_length = 50000
     delta_t = 0.3
 
-    # With speed limit
-    car_params = Params(T=(1.4, 0.3), a=(2, 0.425), b=(2.5, 0.25), delta=4, s_0=2, s_1=0, length=(4.55, 0.175),
-                        thr=(0.3, 0.1), pol=(0.25, 0.125), fail_p=1e-6, right_bias=(0.3, 0.1), fail_steps=600,
+    # With speed limit and constant params (standard)
+    #===========================================================================================
+    car_params = Params(T=1.4, a=2, b=2.5, delta=4, s_0=2, s_1=0, length=4.55,
+                        thr=0.3, pol=0.25, right_bias=0.3, fail_steps=900,
                         spawn_weight=139829)
 
-    trucc_params = Params(T=(1.6, 0.3), a=(1, 0.1), b=(1.5, 0.25), delta=4, s_0=2, s_1=0, length=(16.5, 1.25),
-                        thr=(0.3, 0.1), pol=(0.25, 0.125), fail_p=1e-6, right_bias=(0.3, 0.1), fail_steps=1200,
+    trucc_params = Params(T=1.6, a=1, b=1.5, delta=4, s_0=2, s_1=0, length=16.5,
+                        thr=0.3, pol=0.25, right_bias=0.3, fail_steps=900,
                         spawn_weight=7886)
 
-    limits = [60, 80, 100, 120, 140, 160, 180][0:1]
-    data_list = []
-    for l in limits:
-        filename=f'speedlimit_{l}.json'
-        data = read_data(filename=filename)
-        if data is None:
-            print(f'Running simulation for speedlimit={l}')
-            filename = make_filename(filename)
-            car_params.v_0 = (l/3.6, 5)
-            trucc_params.v_0 = (min(l, 80)/3.6, 2.5)
+    limits = [80, 100, 120, 140]
+    fail_ps = [0, 1e-6, 1e-4, 1e-2]
 
-            sim = Simulation([car_params, trucc_params], road_length=road_length, car_frequency=2, delta_t=delta_t)
-            data = sim.run()
-            save_data(data, filename)
-        data_list.append(data)
+    for p in fail_ps:
+        for l in limits:
+            filename_data=f'speedlimit_{l}_fail_{p}.json'
+            filename_average=f'speedlimit_{l}_fail_{p}_average.json'
+            filename_graph=f'speedlimit_{l}_fail_{p}_graph.png'
+            data = read_data(filename=filename_data)
+            if data is None:
+                print(f'Running simulation for speedlimit={l}, fail_p={p}')
+
+                car_params.v_0 = (l/3.6, 5/3.6)
+                car_params.fail_p = p
+
+                trucc_params.v_0 = (min(l, 80)/3.6, 2.5/3.6)
+                trucc_params.fail_p = p
+
+                sim = Simulation([car_params, trucc_params], road_length=road_length, car_frequency=2, delta_t=delta_t)
+                data = sim.run()
+                save_data(data, filename_data, overwrite=True)
+
+            avg = Metrics.avg_speed(data)
+            save_data(avg, filename_average, overwrite=True)
+
+            dots = Metrics.make_dots_bw(data, road_length, time_div=1, delta_x=10)
+            dots_to_image(dots, filename_graph, overwrite=True)
+
+    #===========================================================================================
 
     #show_pygame(data_list[3], delta_t)
     
@@ -119,8 +134,6 @@ if __name__ == "__main__":
     #    avg.append(np.average(Metrics.avg_speed(data)))
     #r   med.append(np.median(Metrics.median_speed(data)))
 
-    dots = Metrics.make_dots_bw(data, road_length, time_div=1, delta_x=5)
-    dots_to_image(dots, "dots_test.png")
 
     #plt.plot(limits, avg, marker='o')
     #plt.plot(limits, med, marker='o')
