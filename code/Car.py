@@ -54,7 +54,7 @@ class Params:
         
         def positive_normal(avg, dev):
             a = abs(np.random.normal(avg, dev))
-            return a if avg-w*dev <= a <= avg+w*dev else avg
+            return a if avg-2*dev <= a <= avg+2*dev else avg
 
         v_0 = positive_normal(self.v_0[0], self.v_0[1]) if hasattr(self.v_0, '__getitem__') else self.v_0
         s_0 = positive_normal(self.s_0[0], self.s_0[1]) if hasattr(self.s_0, '__getitem__') else self.s_0
