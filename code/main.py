@@ -100,14 +100,18 @@ if __name__ == "__main__":
 
     limits = [80, 100, 120, 140]
     fail_ps = [0, 1e-6, 1e-4, 1e-2]
+    avg_table = np.zeros((len(fail_ps), len(limits)))
 
-    for p in fail_ps:
-        for l in limits:
-            folder='speedlimit/'
+    folder='speedlimit/'
+    filename_plot_groupped=folder + f'speedlimit_plot_groupped.svg'
+    for i, p in enumerate(fail_ps):
+        filename_plot=folder + f'speedlimit_plot_fail_{p}.svg'
+        for j, l in enumerate(limits):
             filename_data=folder + f'speedlimit_{l}_fail_{p}.json'
             filename_average=folder + f'speedlimit_{l}_fail_{p}_average.json'
             filename_graph=folder + f'speedlimit_{l}_fail_{p}_graph.png'
             filename_average_plot=folder + f'speedlimit_{l}_fail_{p}_average_plot.svg'
+
             data = read_data(filename=filename_data)
             if data is None:
                 print(f'Running simulation for speedlimit={l}, fail_p={p}')
@@ -122,13 +126,25 @@ if __name__ == "__main__":
                 data = sim.run()
                 save_data(data, filename_data, overwrite=True)
 
-            avg = Metrics.avg_speed(data)
-            save_data(avg, filename_average, overwrite=True)
+            avg = read_data(filename_average)
+            if avg is None:
+                avg = Metrics.avg_speed(data)
+                save_data(avg, filename_average, overwrite=True)
+            avg_table[i][j] = np.mean(avg)
 
             Metrics.plot_bins(100, avg, filename_average_plot)
 
             dots = Metrics.make_dots_bw(data, road_length, time_div=1, delta_x=10)
             dots_to_image(dots, filename_graph, overwrite=True)
+
+        plt.bar(range(len(limits), avg_table[i]))
+        plt.xticks(range(len(limits)), limits)
+        plt.ylabel("Average speed")
+        plt.xlabel("Speed limit")
+        plt.savefig(filename_plot)
+        plt.close()
+
+    Metrics.plot_bar_groupped(avg_table, filename_plot_groupped, fail_ps, xticks=limits, ylabel="Average speed", xlabel="Speed limit")
 
     #===========================================================================================
 
@@ -146,14 +162,19 @@ if __name__ == "__main__":
     avgs = [100, 120, 140, 160, 180]
     widths = [10, 15, 20]
     fail_ps = [0, 1e-6]
+    avg_table = np.zeros((len(fail_ps), len(avgs)))
 
-    for p in fail_ps:
-        for a in avgs:
+    for i, p in enumerate(fail_ps):
+        folder='no_speedlimit/{p}/'
+        filename_graph_groupped=folder + f'no_speedlimit_graph_groupped.svg'
+        for i, a in enumerate(avgs):
+            filename_plot=folder + f'speedlimit_plot_fail_{p}.svg'
             for w in widths:
-                folder='no_speedlimit/'
                 filename_data=folder + f'no_speedlimit_({a}, {w})_fail_{p}.json'
                 filename_average=folder + f'no_speedlimit_({a}, {w})_fail_{p}_average.json'
                 filename_graph=folder + f'no_speedlimit_({a}, {w})_fail_{p}.png'
+                filename_average_plot=folder + f'speedlimit_{l}_fail_{p}_average_plot.svg'
+
                 data = read_data(filename=filename_data)
                 if data is None:
                     print(f'Running simulation for average speed={a}, width={w}, fail_p={p}')
@@ -168,10 +189,24 @@ if __name__ == "__main__":
                     data = sim.run()
                     save_data(data, filename_data, overwrite=True)
 
-                avg = Metrics.avg_speed(data)
-                save_data(avg, filename_average, overwrite=True)
+                avg = read_data(filename_average)
+                if avg is None:
+                    avg = Metrics.avg_speed(data)
+                    save_data(avg, filename_average, overwrite=True)
+                avg_table[i][j] = np.mean(avg)
+
+                Metrics.plot_bins(100, avg, filename_average_plot)
 
                 dots = Metrics.make_dots_bw(data, road_length, time_div=1, delta_x=10)
                 dots_to_image(dots, filename_graph, overwrite=True)
 
+
+            plt.bar(range(len(avgs), avg_table[i]))
+            plt.xticks(range(len(avgs)), avgs)
+            plt.ylabel("Average speed")
+            plt.xlabel("Speed limit")
+            plt.savefig(filename_plot)
+            plt.close()
+
+        Metrics.plot_bar_groupped(avg_table, filename_graph_groupped, fail_ps, xticks=avgs, ylabel="Average speed", xlabel="Desired speed")
     #===========================================================================================
