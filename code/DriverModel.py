@@ -16,7 +16,7 @@ class Driver:
         s_star = (params.s_0
                 + params.s_1 * math.sqrt(v/params.v_0)
                 + params.T * v
-                + (v + delta_v) / (2 * math.sqrt(params.a * params.b)))
+                + (v * delta_v) / (2 * math.sqrt(params.a * params.b)))
 
         return s_star
 
