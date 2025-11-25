@@ -1,7 +1,7 @@
 # Complex Social Systems Fall 2020 – Research Plan
 
 > * Group Name: The Traffic Team
-> * Group participants names: Diego De los Santos, Daniel Nezamabadi, Natalie Suter, Róbert Veres, Victor Vitéz
+> * Group participants names: Diego de los Santos, Daniel Nezamabadi, Natalie Suter, Róbert Veres, Victor Vitéz
 > * Project Title: Effects of a general speed limit on two-lane highway traffic
 
 ## General Introduction
